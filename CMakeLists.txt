@@ -30,6 +30,7 @@ target_compile_definitions(GuiAppExample
         JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_USE_XSHM=1
         JUCE_USE_XRENDER=1
+        JUCE_FORCE_DEBUG=1
         )
 
 target_link_libraries(GuiAppExample

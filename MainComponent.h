@@ -5,6 +5,7 @@
 // have called `juce_generate_juce_header(<thisTarget>)` in your CMakeLists.txt,
 // you could `#include <JuceHeader.h>` here instead, to make all your module headers visible.
 #include <juce_gui_extra/juce_gui_extra.h>
+#include <juce_gui_basics/juce_gui_basics.h>
 
 //==============================================================================
 /*
@@ -19,11 +20,17 @@ public:
 
     //==============================================================================
     void paint (juce::Graphics&) override;
+
+    void drawCheckerboard(juce::Graphics&);
+
+    void drawRectangle(juce::Graphics&);
+
     void resized() override;
 
 private:
     //==============================================================================
     // Your private member variables go here...
+    std::unique_ptr<juce::ComponentBoundsConstrainer> constrainer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

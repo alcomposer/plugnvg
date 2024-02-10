@@ -1,10 +1,31 @@
 #include <JuceHeader.h>
 #include "MainComponent.h"
 
+class BorderBoundsConstrainer : public ComponentBoundsConstrainer {
+  public:
+    BorderBoundsConstrainer() : ComponentBoundsConstrainer() { }
+
+    void checkBounds(Rectangle<int>& bounds, const Rectangle<int>& previous,
+                             const Rectangle<int>& limits,
+                             bool stretching_top, bool stretching_left,
+                             bool stretching_bottom, bool stretching_right) override
+    {
+        std::cout << "======================checkint bounds" << std::endl;
+        border_.subtractFrom(bounds);
+        ComponentBoundsConstrainer::checkBounds(bounds, previous, limits,
+                                          stretching_top, stretching_left,
+                                          stretching_bottom, stretching_right);
+        border_.addTo(bounds);
+    }
+
+    void setBorder(BorderSize<int> border) { border_ = border; }
+
+  protected:
+    BorderSize<int> border_;
+};
 
 //==============================================================================
-class GuiAppApplication  : public juce::JUCEApplication
-{
+class GuiAppApplication  : public juce::JUCEApplication {
 public:
     //==============================================================================
     GuiAppApplication() {}
@@ -12,40 +33,38 @@ public:
     // We inject these as compile definitions from the CMakeLists.txt
     // If you've enabled the juce header with `juce_generate_juce_header(<thisTarget>)`
     // you could `#include <JuceHeader.h>` and use `ProjectInfo::projectName` etc. instead.
-    const juce::String getApplicationName() override       { return JUCE_APPLICATION_NAME_STRING; }
-    const juce::String getApplicationVersion() override    { return JUCE_APPLICATION_VERSION_STRING; }
-    bool moreThanOneInstanceAllowed() override             { return true; }
+    const juce::String getApplicationName() override { return JUCE_APPLICATION_NAME_STRING; }
+
+    const juce::String getApplicationVersion() override { return JUCE_APPLICATION_VERSION_STRING; }
+
+    bool moreThanOneInstanceAllowed() override { return true; }
 
     //==============================================================================
-    void initialise (const juce::String& commandLine) override
-    {
+    void initialise(const juce::String &commandLine) override {
         // This method is where you should put your application's initialisation code..
-        juce::ignoreUnused (commandLine);
+        juce::ignoreUnused(commandLine);
 
-        mainWindow.reset (new MainWindow (getApplicationName()));
+        mainWindow.reset(new MainWindow(getApplicationName()));
     }
 
-    void shutdown() override
-    {
+    void shutdown() override {
         // Add your application's shutdown code here..
 
         mainWindow = nullptr; // (deletes our window)
     }
 
     //==============================================================================
-    void systemRequestedQuit() override
-    {
+    void systemRequestedQuit() override {
         // This is called when the app is being asked to quit: you can ignore this
         // request and let the app carry on running, or call quit() to allow the app to close.
         quit();
     }
 
-    void anotherInstanceStarted (const juce::String& commandLine) override
-    {
+    void anotherInstanceStarted(const juce::String &commandLine) override {
         // When another instance of the app is launched while this one is running,
         // this method is invoked, and the commandLine parameter tells you what
         // the other instance's command-line arguments were.
-        juce::ignoreUnused (commandLine);
+        juce::ignoreUnused(commandLine);
     }
 
     //==============================================================================
@@ -53,7 +72,7 @@ public:
         This class implements the desktop window that contains an instance of
         our MainComponent class.
     */
-    class MainWindow    : public juce::DocumentWindow
+class MainWindow    : public juce::DocumentWindow
     {
     public:
         explicit MainWindow (juce::String name)
@@ -62,38 +81,64 @@ public:
                                                           .findColour (ResizableWindow::backgroundColourId),
                               DocumentWindow::allButtons)
         {
-            setUsingNativeTitleBar (false);
-            setResizable (true, false);
-            setResizeLimits(500, 500, 10000, 10000);
-
+            auto useNativeTitlebar = true;
+            setUsingNativeTitleBar (useNativeTitlebar);
+            setResizable(true, false);
+            //setResizeLimits(500, 500, 500, 500);
+            //getPeer()->forceNotResizable();
+            //setTitleBarHeight(0);
+            //auto titlebarHeight = 37;
+            //setTitleBarHeight(37);
+            //std::cout << "title bar height is: " << getTitleBarHeight() << std::endl;
+            constrainer = std::make_unique<BorderBoundsConstrainer>();
+            //constrainer->setBorder(BorderSize<int>(36, 0, 0, 0));
+            //mainConstrainer = std::make_unique<MainConstrainer>(this, constrainer.get());
+            constrainer->setMinimumSize(500, (500) * (9 / 16.0f));
+            //constrainer->set()
+            auto AR = 16/9.0f;
+            //auto w = 500;
+            //auto h = (500 + 47) * AR;
+            //auto newAR = w/h;
+            constrainer->setFixedAspectRatio(AR);
+            setConstrainer(constrainer.get());
             mainComponent = std::make_unique<MainComponent>();
             setContentOwned (mainComponent.get(), true);
 
-            
-            //centreWithSize (getWidth(), getHeight());
-            //setConstrainer(nullptr);
-            //constrainer.setMinimumSize(500, 500);
-            //setConstrainer(&constrainer);
-            //border = std::make_unique<ResizableBorderComponent>(getTopLevelComponent(), &constrainer);
-            //border->setAlwaysOnTop(true);
-            //addAndMakeVisible(border.get());
+            //setResizable(true, false);
+
+            //if (!useNativeTitlebar) {
+                border = std::make_unique<juce::ResizableBorderComponent>(this, constrainer.get());
+                border->setAlpha(0.0f);
+                border->setAlwaysOnTop(true);
+                addAndMakeVisible(border.get());
+            //}
 
             setVisible (true);
         }
 
-        //void resized() override
+        void resized() override
+        {
+            if (border)
+                border->setBounds(getLocalBounds().withTop(-47));
+
+            /*
+            std::cout << "border: top: " << getBorderThickness().getTop()
+                      << " bottom: " << getBorderThickness().getBottom()
+                      << " left: " << getBorderThickness().getLeft()
+                      << " right: " << getBorderThickness().getRight()
+                      << std::endl;
+            */
+             DocumentWindow::resized();
+        }
+
+        //BorderSize<int> getContentComponentBorder() override
         //{
-        //    if (border)
-        //        border->setBounds(getLocalBounds());
-        //
-        //    DocumentWindow::resized();
+        //    return BorderSize<int>(36, 0, 0, 0);
         //}
 
         //BorderSize<int> getBorderThickness() override
         //{
-        //    return BorderSize<int>();
-        //    //g.setColour(juce::Colours::purple);
-        //    //g.fillRoundedRectangle(getLocalBounds().toFloat(), 10.0f);
+        //    return BorderSize<int>(36, 0, 0, 0);
         //}
 
         void closeButtonPressed() override
@@ -112,9 +157,9 @@ public:
         */
 
     private:
-        ComponentBoundsConstrainer constrainer;
+        std::unique_ptr<BorderBoundsConstrainer> constrainer;
         std::unique_ptr<ResizableBorderComponent> border;
-
+        //std::unique_ptr<MainConstrainer> mainConstrainer;
         std::unique_ptr<MainComponent> mainComponent;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
