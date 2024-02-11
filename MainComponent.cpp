@@ -8,6 +8,7 @@ MainComponent::MainComponent()
     //resizableBorderComponent->setAlwaysOnTop(true);
     ////resized();
     //mainWindow->Component::addAndMakeVisible(resizableBorderComponent.get());
+    addAndMakeVisible(vis);
     setSize (600, 600 * (9 / 16.0f));
 }
 
@@ -78,10 +79,10 @@ void MainComponent::drawRectangle(juce::Graphics& g)
 void MainComponent::paint (juce::Graphics& g)
 {
     //drawCheckerboard(g);
-    drawRectangle(g);
+    //drawRectangle(g);
 }
 
 void MainComponent::resized()
 {
-    //resizableBorderComponent->setBounds(getLocalBounds());
+    vis.setBounds(getLocalBounds());
 }
