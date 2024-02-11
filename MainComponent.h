@@ -8,13 +8,15 @@
 // you could `#include <JuceHeader.h>` here instead, to make all your module headers visible.
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_opengl/juce_opengl.h>
+
 #include "Vis.h"
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent   : public juce::Component
+class MainComponent   : public Component
 {
 public:
     //==============================================================================
@@ -30,6 +32,7 @@ public:
     void resized() override;
 
 private:
+    OpenGLContext glContext;
 
     CanvasViewportBackground vis;
 

@@ -25,18 +25,14 @@ public:
     {
         setOpaque(false);
 
-        if (auto* peer = getPeer()) {
-            peer->setCurrentRenderingEngine(0);
-        }
-
         addMouseListener(this, false);
 
-        openGLContext.setOpenGLVersionRequired(OpenGLContext::openGL4_3);
-        openGLContext.setMultisamplingEnabled(true);
+        //openGLContext.setOpenGLVersionRequired(OpenGLContext::openGL4_3);
+        //openGLContext.setMultisamplingEnabled(true);
 
-        auto pixelFormat = OpenGLPixelFormat(8, 8, 16, 8);
-        pixelFormat.multisamplingLevel = 2;
-        openGLContext.setPixelFormat(pixelFormat);
+        //auto pixelFormat = OpenGLPixelFormat(8, 8, 16, 8);
+        //pixelFormat.multisamplingLevel = 2;
+        //openGLContext.setPixelFormat(pixelFormat);
 
         //openGLContext.setComponentPaintingEnabled(true);
         //openGLContext.executeOnGLThread([](OpenGLContext& context){
@@ -45,15 +41,16 @@ public:
         //}, true);
         //openGLContext.makeActive();
         //openGLContext.setContinuousRepainting(true);
-        openGLContext.attachTo(*parent);
+        //openGLContext.attachTo(*parent);
 
         addAndMakeVisible(testBox);
+        testBox.setSize(10,10);
         startTimerHz(60);
     }
 
     ~OpenGLCon()
     {
-        openGLContext.detach();
+        //openGLContext.detach();
         shader.reset();
     }
 
@@ -71,8 +68,8 @@ public:
 
     void resized() override
     {
-        auto b = Rectangle<int>(0,0,100,100).withCentre(getLocalBounds().getCentre());
-        testBox.setBounds(b);
+        //auto b = Rectangle<int>(0,0,10,10).withCentre(getLocalBounds().getCentre());
+        //testBox.setBounds(b);
     }
 
 
@@ -83,8 +80,9 @@ public:
         shader.reset();
 
         mousePos = getLocalPoint(nullptr, Desktop::getInstance().getMousePosition());
+        testBox.setCentrePosition(mousePos);
 
-        const auto fragmentShader = String("vec2 mousePos = vec2(") + String(static_cast<GLfloat>(mousePos.x)) + ", " + String(static_cast<GLfloat>(mousePos.y)) + ");\n" + fragmentShaderDots;
+        const auto fragmentShader = String("vec2 mousePos = vec2(") + String(static_cast<GLfloat>(mousePos.x)) + ", " + String(static_cast<GLfloat>(mousePos.y)) + ");\n" + fragmentShader1;
 
         if (fragmentShader.isNotEmpty()) {
             //std::cout << "resetting the shader =====================" << std::endl;
@@ -107,34 +105,32 @@ public:
     }
 private:
 
-    OpenGLContext openGLContext;
+    //OpenGLContext openGLContext;
     Point<int> mousePos;
 
     std::unique_ptr<OpenGLGraphicsContextCustomShader> shader;
 
     TestBox testBox;
 
-    const String fragmentShader1 = {
-        "void main()\n"
-        "{\n"
-        "    " JUCE_MEDIUMP " vec4 colour1 = vec4 (1.0, 0.4, 0.6, 1.0);\n"
-        "    " JUCE_MEDIUMP " vec4 colour2 = vec4 (0.3, 0.4, 0.4, 1.0);\n"
-        "    " JUCE_MEDIUMP " float alpha = distance (pixelPos, mousePos) / 200.0;\n"
-        "    gl_FragColor = pixelAlpha * mix (colour1, colour2, alpha);\n"
-        "}\n"
-    };
+    const String fragmentShader1 = R"(
+        void main(){
+            vec4 colour1 = vec4 (1.0, 0.4, 0.6, 1.0);
+            vec4 colour2 = vec4 (0.3, 0.4, 0.4, 1.0);
+            float alpha = distance (pixelPos, mousePos) / 200.0;
+            gl_FragColor = pixelAlpha * mix (colour1, colour2, alpha);
+        }
+    )";
 
-    const String fragmentShaderDots = {
-     "void main()\n"
-     "{\n"
-     "vec4 outColor = vec4 (1.0, 1.0, 1.0, 1.0);\n"
-     "if((mod(pixelPos.x - 1, 2) == 0) && (mod(pixelPos.y - 2, 2) == 0 )){\n"
-     "   outColor = vec4 (1.0, 1.0, 1.0, 1.0);\n"
-     "} else \n"
-     " outColor = vec4(0.0,0.0,0.0,0.0);\n"
-    "gl_FragColor = outColor;\n"
-    "}\n"
-    };
+    const String fragmentShaderDots = R"(
+        void main()
+        {
+        vec4 outColor = vec4 (1.0, 1.0, 1.0, 1.0);
+        if ((mod(pixelPos.x - 1, 2) == 0) && (mod(pixelPos.y - 2, 2) == 0 )){
+            outColor = vec4(1.0, 1.0, 1.0, 1.0);
+        else
+        outColor = vec4(0.0, 0.0, 0.0, 0.0);
+        gl_FragColor = outColor;
+        )";
 };
 
 class CanvasViewportBackground : public Component

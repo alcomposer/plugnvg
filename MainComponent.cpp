@@ -1,5 +1,6 @@
 #include "MainComponent.h"
 
+
 //==============================================================================
 MainComponent::MainComponent()
 {
@@ -8,6 +9,11 @@ MainComponent::MainComponent()
     //resizableBorderComponent->setAlwaysOnTop(true);
     ////resized();
     //mainWindow->Component::addAndMakeVisible(resizableBorderComponent.get());
+    if (auto *peer = getPeer()) {
+        peer->setCurrentRenderingEngine(0);
+    }
+
+    glContext.attachTo(*this);
     addAndMakeVisible(vis);
     setSize (600, 600 * (9 / 16.0f));
 }
