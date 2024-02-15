@@ -1,3 +1,0 @@
-[submodule "libraries/JUCE"]
-	path = libraries/JUCE
-	url = https://github.com/alcomposer/JUCE.git
