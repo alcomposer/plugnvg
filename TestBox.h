@@ -15,6 +15,17 @@ public:
     void paint(Graphics& g) override
     {
         std::cout << "painting testbox" << std::endl;
-        g.fillAll(Colours::red);
+        g.setColour(col);
+        g.fillRoundedRectangle(0.0f, 0.0f, getWidth(), getHeight(), 18);
     }
+
+    void setBoxColour(Colour c)
+    {
+        if (col == c)
+            return;
+        col = c;
+        repaint();
+    }
+private:
+    Colour col = Colours::red;
 };

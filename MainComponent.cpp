@@ -1,5 +1,5 @@
 #include "MainComponent.h"
-
+#include "TestBox.h"
 
 //==============================================================================
 MainComponent::MainComponent()
@@ -9,12 +9,22 @@ MainComponent::MainComponent()
     //resizableBorderComponent->setAlwaysOnTop(true);
     ////resized();
     //mainWindow->Component::addAndMakeVisible(resizableBorderComponent.get());
+    setOpaque(false);
     if (auto *peer = getPeer()) {
         peer->setCurrentRenderingEngine(0);
     }
-
+    //glContext.setComponentPaintingEnabled(true);
+    glContext.setOpenGLVersionRequired(OpenGLContext::openGL4_3);
+    auto form = OpenGLPixelFormat(8,8,16,8);
+    glContext.setPixelFormat(form);
     glContext.attachTo(*this);
+    //addAndMakeVisible(back);
+    back.setSize(400, 400);
+    back.setBoxColour(Colours::blueviolet);
     addAndMakeVisible(vis);
+    addAndMakeVisible(testBox);
+    testBox.setBoxColour(Colour(45, 45, 45));
+    //testBox.setSize(200, 200);
     setSize (600, 600 * (9 / 16.0f));
 }
 
@@ -90,5 +100,8 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
+    back.setCentrePosition(getLocalBounds().getCentre());
     vis.setBounds(getLocalBounds());
+    testBox.setBounds(getLocalBounds().reduced(17));
+
 }

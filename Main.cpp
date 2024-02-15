@@ -81,12 +81,14 @@ class MainWindow    : public juce::DocumentWindow
                                                           .findColour (ResizableWindow::backgroundColourId),
                               DocumentWindow::allButtons)
         {
-            auto useNativeTitlebar = true;
+            setOpaque(false);
+            auto useNativeTitlebar = false;
             setUsingNativeTitleBar (useNativeTitlebar);
-            setResizable(true, false);
+            //setResizable(true, false);
             //setResizeLimits(500, 500, 500, 500);
             //getPeer()->forceNotResizable();
-            //setTitleBarHeight(0);
+            setTitleBarHeight(0);
+            setBackgroundColour(Colours::transparentBlack);
             //auto titlebarHeight = 37;
             //setTitleBarHeight(37);
             //std::cout << "title bar height is: " << getTitleBarHeight() << std::endl;

@@ -36,6 +36,9 @@ private:
 
     CanvasViewportBackground vis;
 
+    TestBox testBox;
+    TestBox back;
+
     //==============================================================================
     // Your private member variables go here...
     std::unique_ptr<juce::ComponentBoundsConstrainer> constrainer;
