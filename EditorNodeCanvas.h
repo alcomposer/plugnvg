@@ -19,7 +19,7 @@ public:
     void mouseDown(MouseEvent const& e) override
     {
         if (e.mods.isMiddleButtonDown()) {
-            currentPos = e.getPosition();
+            currentPos = getPosition();
         } else if (e.mods.isLeftButtonDown()){
             isPressed = true;
             auto pos = e.getPosition();
@@ -32,27 +32,22 @@ public:
     void mouseUp(MouseEvent const& e) override
     {
         isPressed = false;
+        setMouseCursor(MouseCursor::NormalCursor);
     }
 
     void mouseDrag(MouseEvent const& e) override
     {
         if (e.mods.isMiddleButtonDown()) {
-            auto pos = e.getScreenPosition();
-            auto delta = pos - currentPos;
-            currentPos = pos;
-
-            auto move = getPosition().translated(delta.getX(), delta.getY());
-            setTopLeftPosition(move);
-            //for (auto node : nodes) {
-            //    auto move = node->getBounds().translated(delta.getX(), delta.getY());
-            //    node->setBounds(move);
-            //}
+            setMouseCursor(MouseCursor::DraggingHandCursor);
+            auto delta = currentPos + e.getOffsetFromDragStart();
+            setTopLeftPosition(delta);
         }
     }
 
     void renderNVG(NVGcontext* nvg) override
     {
         auto b = getBounds();
+        std::cout << "canvas bounds= " << b.toString() << std::endl;
         nvgBeginPath(nvg);
         auto defaultColor = nvgRGBf(.3, .3, .3);
         auto selectedColor = nvgRGBf(.2, .2, .2);

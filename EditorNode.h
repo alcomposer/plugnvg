@@ -29,12 +29,12 @@ public:
 
     void mouseEnter(MouseEvent const& e) override
     {
-
+        isHover = true;
     }
 
     void mouseExit(MouseEvent const& e) override
     {
-
+        isHover = false;
     }
 
     void mouseDrag(MouseEvent const& e) override
@@ -52,8 +52,10 @@ public:
         auto parentLeft = getParentComponent()->getBounds().getTopLeft();
         auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY());
         nvgBeginPath(nvg);
-        auto defaultColor = nvgRGBf(.3, .3, 1);
-        nvgFillColor(nvg, defaultColor);
+        auto cSelect = nvgRGBf(.3, .3, .3);
+        auto cDefault = nvgRGBf(.2, .2, .2);
+        auto colour = isHover ? cSelect : cDefault;
+        nvgFillColor(nvg, colour);
         nvgRoundedRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight(), 5);
         nvgFill(nvg);
         nvgStrokeColor(nvg, nvgRGBf(.9, .9, .9));
@@ -63,5 +65,6 @@ public:
     }
 private:
     Point<int> pos;
+    bool isHover = false;
     OwnedArray<EditorNodeIolet> iolets;
 };

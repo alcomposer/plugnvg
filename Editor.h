@@ -17,7 +17,7 @@ public:
         setName("editor");
         addAndMakeVisible(nodeCanvas);
         nodeCanvas.setSize(10000, 10000);
-        nodeCanvas.setCentrePosition(5000, 5000);
+        nodeCanvas.setTopLeftPosition(-5000, -5000);
         addAndMakeVisible(topPanel);
 
     }
@@ -35,7 +35,7 @@ public:
     void resized() override
     {
         topPanel.setBounds(0, 0, getWidth(), 38);
-        //nodeCanvas.setPosition(0, 38, getWidth(), getHeight() - 38);
+        //nodeCanvas.setTopLeftPosition(5000, 5000);
     }
 
 private:
