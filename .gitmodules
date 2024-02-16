@@ -1,0 +1,3 @@
+[submodule "libraries/JUCE"]
+	path = libraries/JUCE
+	url = https://github.com/plugdata-team/JUCE.git

@@ -6,17 +6,25 @@
 // directly. If you need to remain compatible with Projucer-generated builds, and
 // have called `juce_generate_juce_header(<thisTarget>)` in your CMakeLists.txt,
 // you could `#include <JuceHeader.h>` here instead, to make all your module headers visible.
+#include <JuceHeader.h>
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_gui_basics/juce_gui_basics.h>
-#include <juce_opengl/juce_opengl.h>
 
-#include "Vis.h"
+#include <juce_opengl/juce_opengl.h>
+using namespace juce::gl;
+
+#include "nanovg/nanovg.h"
+#define NANOVG_GLES2_IMPLEMENTATION
+#include "nanovg/nanovg_gl.h"
+
+#include "Editor.h"
+
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent   : public Component
+class MainComponent   : public OpenGLAppComponent, public Timer
 {
 public:
     //==============================================================================
@@ -25,19 +33,25 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
 
-    void drawCheckerboard(juce::Graphics&);
-
-    void drawRectangle(juce::Graphics&);
-
     void resized() override;
+
+    void timerCallback() override;
+
+    void initialise() override;
+
+    void shutdown() override;
+
+    void render() override;
+
+    void processRender(Component* node);
+
+    //CriticalSection renderLock;
 
 private:
     OpenGLContext glContext;
+    NVGcontext* nvg;
 
-    CanvasViewportBackground vis;
-
-    TestBox testBox;
-    TestBox back;
+    std::unique_ptr<Editor> editor;
 
     //==============================================================================
     // Your private member variables go here...

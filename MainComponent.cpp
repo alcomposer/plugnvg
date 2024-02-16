@@ -1,6 +1,6 @@
 #include "MainComponent.h"
-#include "TestBox.h"
-
+//#include "NVGComponent.h"
+//#include "Editor.h"
 //==============================================================================
 MainComponent::MainComponent()
 {
@@ -10,83 +10,61 @@ MainComponent::MainComponent()
     ////resized();
     //mainWindow->Component::addAndMakeVisible(resizableBorderComponent.get());
     setOpaque(false);
-    if (auto *peer = getPeer()) {
-        peer->setCurrentRenderingEngine(0);
-    }
+    //if (auto *peer = getPeer()) {
+    //    peer->setCurrentRenderingEngine(0);
+    //}
     //glContext.setComponentPaintingEnabled(true);
-    glContext.setOpenGLVersionRequired(OpenGLContext::openGL4_3);
+    glContext.setOpenGLVersionRequired(OpenGLContext::openGL3_2);
     auto form = OpenGLPixelFormat(8,8,16,8);
     glContext.setPixelFormat(form);
+        //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.attachTo(*this);
-    //addAndMakeVisible(back);
-    back.setSize(400, 400);
-    back.setBoxColour(Colours::blueviolet);
-    addAndMakeVisible(vis);
-    addAndMakeVisible(testBox);
-    testBox.setBoxColour(Colour(45, 45, 45));
-    //testBox.setSize(200, 200);
+
+    editor = std::make_unique<Editor>();
+    addAndMakeVisible(editor.get());
+
+
     setSize (600, 600 * (9 / 16.0f));
+    startTimerHz(60);
 }
 
-void MainComponent::drawCheckerboard(juce::Graphics& g)
+void MainComponent::timerCallback()
 {
-    g.fillAll (juce::Colours::black);
+    glContext.triggerRepaint();
+}
 
-    g.setFont (juce::Font (16.0f));
-    g.setColour (juce::Colours::grey);
-    auto x_size = getWidth() / 10.0f;
-    auto y_size = getHeight() / 10.0f;
-    //auto x_size = 40;
-    //auto y_size = 40;
-    for (int i = 0; i < 11; i++)
-    {
-        for (int j = 0; j < 11; j++)
-        {
-            auto x = x_size * i;
-            auto y = y_size * j;
+void MainComponent::initialise()
+{
+    nvg = nvgCreateGLES2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
-            // Draw a rectangle at the current position
-            if ((i + j) % 2 == 0)
-            {
-                g.setColour(juce::Colours::black);
-            }
-            else
-            {
-                g.setColour(juce::Colours::white);
-            }
-            g.fillRect(x, y, x_size, y_size);
+    if (!nvg)
+        std::cout << "could not init nvg" << std::endl;
+}
+
+void MainComponent::shutdown()
+{
+}
+
+void MainComponent::render()
+{
+    glViewport(0, 0, getWidth(), getHeight());
+    OpenGLHelpers::clear(Colours::red);
+
+    nvgBeginFrame(nvg, getWidth(), getHeight(), 1);
+    //std::cout << "process render" << std::endl;
+    processRender(this);
+    nvgEndFrame(nvg);
+}
+
+void MainComponent::processRender(Component* node)
+{
+    if (node != nullptr) {
+        //std::cout << "rendering: " << node->getName() << std::endl;
+        if (auto toRender = dynamic_cast<NVGComponent*>(node)) {
+            toRender->render(nvg);
         }
-    }
-}
-
-void MainComponent::drawRectangle(juce::Graphics& g)
-{
-    g.fillAll(juce::Colours::black);
-    g.setColour(juce::Colours::red);
-    auto width = getWidth();
-    auto height = getWidth() * (9 / 16.0f);
-    g.drawRect(juce::Rectangle<int>(0, 0, width, height));
-
-    auto count = 30;
-
-    auto x_size = width / (float)count;
-    auto y_size = height / (float)count;
-    for (int i = 1; i < count; i++) {
-        auto linePosH = i * x_size;
-        g.drawLine(linePosH, 0, linePosH, height);
-        auto linePosV = i * y_size;
-        g.drawLine(0, linePosV, width, linePosV);
-    }
-
-    auto boxCount = count - 1;
-    for (int i = 0; i <= boxCount; i++) {
-        for (int j = 0; j <= boxCount; j++) {
-            auto x = x_size * i;
-            auto y = y_size * j;
-
-            // Draw a rectangle at the current position
-            if ((i == 0 && j == 0) || (i == boxCount && j == boxCount) || (i == boxCount && j == 0) || (i == 0 && j == boxCount))
-                g.fillRect(x, y, x_size, y_size);
+        for (auto& child : node->getChildren()) {
+            processRender(child);
         }
     }
 }
@@ -94,14 +72,9 @@ void MainComponent::drawRectangle(juce::Graphics& g)
 //==============================================================================
 void MainComponent::paint (juce::Graphics& g)
 {
-    //drawCheckerboard(g);
-    //drawRectangle(g);
 }
 
 void MainComponent::resized()
 {
-    back.setCentrePosition(getLocalBounds().getCentre());
-    vis.setBounds(getLocalBounds());
-    testBox.setBounds(getLocalBounds().reduced(17));
-
+    editor->setBounds(getBounds());
 }

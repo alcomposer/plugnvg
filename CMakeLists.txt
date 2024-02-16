@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_subdirectory("libraries")
+add_subdirectory("libraries/JUCE")
+add_subdirectory("libraries/nanovg")
 
 project(GUI_APP_EXAMPLE VERSION 0.0.1)
 
@@ -17,6 +18,9 @@ target_sources(GuiAppExample
     PRIVATE
         Main.cpp
         MainComponent.cpp
+        EditorNodeIolet.cpp
+        EditorConnection.cpp
+        EditorNode.cpp
         )
 
 target_compile_definitions(GuiAppExample
@@ -30,7 +34,7 @@ target_compile_definitions(GuiAppExample
         JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_USE_XSHM=1
         JUCE_USE_XRENDER=1
-        JUCE_FORCE_DEBUG=1
+        #JUCE_FORCE_DEBUG=1
         )
 
 target_link_libraries(GuiAppExample
@@ -42,6 +46,7 @@ target_link_libraries(GuiAppExample
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
         juce::juce_opengl
+        test::nanovg
         )
 
 juce_generate_juce_header(GuiAppExample)

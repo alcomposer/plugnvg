@@ -97,11 +97,11 @@ class MainWindow    : public juce::DocumentWindow
             //mainConstrainer = std::make_unique<MainConstrainer>(this, constrainer.get());
             constrainer->setMinimumSize(500, (500) * (9 / 16.0f));
             //constrainer->set()
-            auto AR = 16/9.0f;
+            //auto AR = 16/9.0f;
             //auto w = 500;
             //auto h = (500 + 47) * AR;
             //auto newAR = w/h;
-            constrainer->setFixedAspectRatio(AR);
+            //constrainer->setFixedAspectRatio(AR);
             setConstrainer(constrainer.get());
             mainComponent = std::make_unique<MainComponent>();
             setContentOwned (mainComponent.get(), true);
