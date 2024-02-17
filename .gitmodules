@@ -1,3 +1,7 @@
 [submodule "libraries/JUCE"]
 	path = libraries/JUCE
 	url = https://github.com/plugdata-team/JUCE.git
+[submodule "libraries/melatonin_perfetto"]
+	path = libraries/melatonin_perfetto
+	url = https://github.com/sudara/melatonin_perfetto.git
+	branch = main

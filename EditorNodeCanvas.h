@@ -11,9 +11,21 @@
 class EditorNodeCanvas : public NVGComponent
 {
 public:
-    EditorNodeCanvas()
+    EditorNodeCanvas(NVGComponent* parent) : NVGComponent(parent)
     {
         setName("node canvas");
+
+        Random random;
+        Range range = Range<int>(4000, 6000);
+
+        for (int i = 0; i < 1000; i++) {
+            auto pos = Point<int>(random.nextInt(range), random.nextInt(range));
+            auto node = new EditorNode(this, pos);
+            //node->setCentrePosition(pos);
+            nodes.add(node);
+            addAndMakeVisible(node);
+            addNVGComponent(node);
+        }
     }
 
     void mouseDown(MouseEvent const& e) override
@@ -23,7 +35,7 @@ public:
         } else if (e.mods.isLeftButtonDown()){
             isPressed = true;
             auto pos = e.getPosition();
-            auto node = new EditorNode(pos);
+            auto node = new EditorNode(this, pos);
             //node->setCentrePosition(pos);
             nodes.add(node);
             addAndMakeVisible(node);
@@ -47,7 +59,7 @@ public:
     void renderNVG(NVGcontext* nvg) override
     {
         auto b = getBounds();
-        std::cout << "canvas bounds= " << b.toString() << std::endl;
+        //std::cout << "canvas bounds= " << b.toString() << std::endl;
         nvgBeginPath(nvg);
         auto defaultColor = nvgRGBf(.3, .3, .3);
         auto selectedColor = nvgRGBf(.2, .2, .2);

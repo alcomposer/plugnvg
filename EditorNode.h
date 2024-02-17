@@ -9,7 +9,7 @@
 class EditorNode : public NVGComponent
 {
 public:
-    EditorNode(Point<int> pos) : pos(pos)
+    EditorNode(NVGComponent* parent, Point<int> pos) : NVGComponent(parent), pos(pos)
     {
         setInterceptsMouseClicks(true, false);
         static int nodeNumber = 0;
@@ -18,9 +18,10 @@ public:
         setCentrePosition(pos);
         auto ioletPos = 5;
         for (int i = 0; i < 3; i++) {
-            auto iolet = new EditorNodeIolet();
+            auto iolet = new EditorNodeIolet(this);
             iolets.add(iolet);
             addAndMakeVisible(iolet);
+            addNVGComponent(iolet);
             iolet->setCentrePosition(ioletPos, 0);
             iolet->pos.x = ioletPos;
             ioletPos += 15;

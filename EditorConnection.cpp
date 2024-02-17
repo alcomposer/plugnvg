@@ -4,7 +4,7 @@
 #include "EditorConnection.h"
 #include "EditorNode.h"
 
-EditorConnection::EditorConnection(Component *node) : node(node)
+EditorConnection::EditorConnection(NVGComponent* parent, Component *node) : NVGComponent(parent), node(node)
 {
     static int con = 0;
     setName("connection " + String(con++));

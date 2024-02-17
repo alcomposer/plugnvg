@@ -10,13 +10,14 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
+#include <melatonin_perfetto/melatonin_perfetto.h>
+
 #include <juce_opengl/juce_opengl.h>
 using namespace juce::gl;
 
 #include "nanovg/nanovg.h"
 #define NANOVG_GLES2_IMPLEMENTATION
 #include "nanovg/nanovg_gl.h"
-
 #include "Editor.h"
 
 //==============================================================================
@@ -29,6 +30,8 @@ class MainComponent   : public OpenGLAppComponent, public Timer
 public:
     //==============================================================================
     MainComponent();
+
+    ~MainComponent();
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -43,7 +46,9 @@ public:
 
     void render() override;
 
-    void processRender(Component* node);
+    void processRender(NVGComponent* node);
+    void processRenderStack(Component* node);
+    void processRenderVector(Component* node);
 
     //CriticalSection renderLock;
 
@@ -52,6 +57,10 @@ private:
     NVGcontext* nvg;
 
     std::unique_ptr<Editor> editor;
+
+#if PERFETTO
+    std::unique_ptr<perfetto::TracingSession> tracingSession;
+#endif
 
     //==============================================================================
     // Your private member variables go here...

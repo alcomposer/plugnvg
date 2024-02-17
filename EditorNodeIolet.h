@@ -9,7 +9,7 @@
 class EditorNodeIolet : public NVGComponent
 {
 public:
-    EditorNodeIolet()
+    EditorNodeIolet(NVGComponent* parent) : NVGComponent(parent)
     {
         static int number = 0;
         setName("iolet " + String(number++));

@@ -3,6 +3,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory("libraries/JUCE")
 add_subdirectory("libraries/nanovg")
+add_subdirectory("libraries/melatonin_perfetto")
 
 project(GUI_APP_EXAMPLE VERSION 0.0.1)
 
@@ -34,6 +35,7 @@ target_compile_definitions(GuiAppExample
         JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_USE_XSHM=1
         JUCE_USE_XRENDER=1
+        PERFETTO=1
         #JUCE_FORCE_DEBUG=1
         )
 
@@ -47,6 +49,7 @@ target_link_libraries(GuiAppExample
         juce::juce_recommended_warning_flags
         juce::juce_opengl
         test::nanovg
+        Melatonin::Perfetto
         )
 
 juce_generate_juce_header(GuiAppExample)

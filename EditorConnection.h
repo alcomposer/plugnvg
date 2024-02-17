@@ -9,7 +9,7 @@ class EditorNode;
 class EditorConnection : public NVGComponent
 {
 public:
-    EditorConnection(Component* node);
+    EditorConnection(NVGComponent* parent, Component* node);
 
     void renderNVG(NVGcontext * nvg) override;
 

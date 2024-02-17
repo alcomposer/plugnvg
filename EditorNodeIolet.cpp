@@ -9,7 +9,7 @@
 void EditorNodeIolet::mouseDown(MouseEvent const& e)
 {
     auto editor = findParentComponentOfClass<EditorNodeCanvas>();
-    newConnection = new EditorConnection(this);
+    newConnection = new EditorConnection(this, this);
     editor->addConnection(newConnection);
 }
 
