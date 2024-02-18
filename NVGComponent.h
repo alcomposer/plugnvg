@@ -17,6 +17,7 @@ public:
     void render(NVGcontext* nvg)
     {
         //lock.enter();
+        TRACE_COMPONENT();
         renderNVG(nvg);
         //lock.exit();
     }

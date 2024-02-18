@@ -5,6 +5,7 @@
 #pragma once
 
 #include "EditorNodeIolet.h"
+#include "libraries/melatonin_perfetto/melatonin_perfetto/melatonin_perfetto.h"
 
 class EditorNode : public NVGComponent
 {
@@ -50,6 +51,7 @@ public:
 
     void renderNVG(NVGcontext* nvg) override
     {
+        //return;
         auto parentLeft = getParentComponent()->getBounds().getTopLeft();
         auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY());
         nvgBeginPath(nvg);

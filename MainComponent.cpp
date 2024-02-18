@@ -26,9 +26,9 @@ MainComponent::MainComponent()
     auto form = OpenGLPixelFormat(8,8,8,8);
     form.multisamplingLevel = 3;
     glContext.setPixelFormat(form);
-    glContext.setSwapInterval(0);
+    glContext.setSwapInterval(1);
     glContext.setContinuousRepainting(false);
-        //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
+    //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
     glContext.attachTo(*this);
 
@@ -37,7 +37,7 @@ MainComponent::MainComponent()
 
 
     setSize (600, 600 * (9 / 16.0f));
-    startTimerHz(30);
+    startTimerHz(60);
 }
 
 MainComponent::~MainComponent()
@@ -74,23 +74,22 @@ void MainComponent::renderOpenGL()
 
     nvgBeginFrame(nvg, getWidth(), getHeight(), 1);
     //std::cout << "================== process render ====================" << std::endl;
-    processRenderStack(editor.get());
+    processRender(editor.get());
     nvgEndFrame(nvg);
 }
 
 void MainComponent::processRender(NVGComponent* c)
 {
     TRACE_COMPONENT();
-    if (c == nullptr)
+    if (c == nullptr || !c->isVisible())
         return;
 
-    if (!c->isVisible() || !c->isShowing())
-        return;
-    //if (NVGComponent* nvcComp = dynamic_cast<NVGComponent*>(c)) {
+    if (NVGComponent* nvcComp = dynamic_cast<NVGComponent*>(c)) {
         //std::cout << "rendering: " << c->getName() << std::endl;
-        c->render(nvg);
-    //}
-    if (c->getNumChildComponents() > 0) {
+        nvcComp->render(nvg);
+    }
+
+    if (c->children.size() > 0) {
         for (auto& child: c->children)
             processRender(child);
     }

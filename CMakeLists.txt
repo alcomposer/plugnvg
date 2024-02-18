@@ -24,6 +24,8 @@ target_sources(GuiAppExample
         EditorNode.cpp
         )
 
+target_compile_options(GuiAppExample PRIVATE -O3)
+
 target_compile_definitions(GuiAppExample
     PRIVATE
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.

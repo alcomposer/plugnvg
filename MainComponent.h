@@ -10,7 +10,7 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
-#include <melatonin_perfetto/melatonin_perfetto.h>
+#include "libraries/melatonin_perfetto/melatonin_perfetto/melatonin_perfetto.h"
 
 #include <juce_opengl/juce_opengl.h>
 using namespace juce::gl;
