@@ -7,6 +7,8 @@ add_subdirectory("libraries/melatonin_perfetto")
 
 project(GUI_APP_EXAMPLE VERSION 0.0.1)
 
+add_compile_options(-fpermissive)
+
 juce_add_gui_app(GuiAppExample
     # VERSION ...                       # Set this if the app version is different to the project version
     # ICON_BIG ...                      # ICON_* arguments specify a path to an image file to use as an icon
@@ -22,9 +24,8 @@ target_sources(GuiAppExample
         EditorNodeIolet.cpp
         EditorConnection.cpp
         EditorNode.cpp
+        EditorNodeCanvas.cpp
         )
-
-target_compile_options(GuiAppExample PRIVATE -O3)
 
 target_compile_definitions(GuiAppExample
     PRIVATE
@@ -37,7 +38,7 @@ target_compile_definitions(GuiAppExample
         JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_USE_XSHM=1
         JUCE_USE_XRENDER=1
-        PERFETTO=1
+        PERFETTO=0
         #JUCE_FORCE_DEBUG=1
         TEST_1000=1
         )

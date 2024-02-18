@@ -9,7 +9,7 @@
 class EditorTopPanel : public NVGComponent
 {
 public:
-    EditorTopPanel(NVGComponent* parent) : NVGComponent(parent)
+    EditorTopPanel()
     {
         setName("top panel");
     }

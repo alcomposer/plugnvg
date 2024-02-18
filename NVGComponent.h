@@ -10,25 +10,12 @@
 class NVGComponent : public Component
 {
 public:
-    NVGComponent(NVGComponent* parent) : parent(parent) {}
+    NVGComponent(){}
 
     virtual void renderNVG(NVGcontext* nvg) = 0;
 
     void render(NVGcontext* nvg)
     {
-        //lock.enter();
-        TRACE_COMPONENT();
         renderNVG(nvg);
-        //lock.exit();
     }
-
-    void addNVGComponent(NVGComponent* c)
-    {
-        children.add(c);
-    }
-
-    Array<NVGComponent*> children;
-    NVGComponent* parent;
-private:
-
 };

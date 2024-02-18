@@ -12,17 +12,15 @@
 class Editor : public NVGComponent
 {
 public:
-    Editor(NVGComponent* c) : NVGComponent(c)
+    Editor()
     {
         setName("editor");
-        nodeCanvas = std::make_unique<EditorNodeCanvas>(this);
+        nodeCanvas = std::make_unique<EditorNodeCanvas>();
         addAndMakeVisible(nodeCanvas.get());
-        addNVGComponent(nodeCanvas.get());
         nodeCanvas->setSize(10000, 10000);
         nodeCanvas->setTopLeftPosition(-5000, -5000);
-        topPanel = std::make_unique<EditorTopPanel>(this);
+        topPanel = std::make_unique<EditorTopPanel>();
         addAndMakeVisible(topPanel.get());
-        addNVGComponent(topPanel.get());
     }
 
     void renderNVG(NVGcontext* nvg) override

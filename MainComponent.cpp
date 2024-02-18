@@ -1,5 +1,6 @@
 #include "MainComponent.h"
 #include <stack>
+#include <mutex>
 #include <functional>
 #include <vector>
 //#include "NVGComponent.h"
@@ -17,14 +18,16 @@ MainComponent::MainComponent()
     ////resized();
     //mainWindow->Component::addAndMakeVisible(resizableBorderComponent.get());
     //setOpaque(false);
+
+    //lock = std::make_shared<std::mutex>();
     if (auto *peer = getPeer())
         peer->setCurrentRenderingEngine(0);
 
     glContext.setComponentPaintingEnabled(false);
     glContext.setOpenGLVersionRequired(OpenGLContext::openGL3_2);
-    glContext.setMultisamplingEnabled(true);
+    //glContext.setMultisamplingEnabled(true);
     auto form = OpenGLPixelFormat(8,8,8,8);
-    form.multisamplingLevel = 3;
+    //form.multisamplingLevel = 3;
     glContext.setPixelFormat(form);
     glContext.setSwapInterval(1);
     glContext.setContinuousRepainting(false);
@@ -32,9 +35,8 @@ MainComponent::MainComponent()
     glContext.setRenderer(this);
     glContext.attachTo(*this);
 
-    editor = std::make_unique<Editor>(nullptr);
+    editor = std::make_unique<Editor>();
     addAndMakeVisible(editor.get());
-
 
     setSize (600, 600 * (9 / 16.0f));
     startTimerHz(60);
@@ -55,7 +57,7 @@ void MainComponent::timerCallback()
 
 void MainComponent::newOpenGLContextCreated()
 {
-    nvg = nvgCreateGL3(0);
+    nvg = nvgCreateGLES3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
     if (!nvg)
         std::cout << "could not init nvg" << std::endl;
@@ -63,45 +65,44 @@ void MainComponent::newOpenGLContextCreated()
 
 void MainComponent::openGLContextClosing()
 {
-    glContext.deactivateCurrentContext();
+    glContext.detach();
 }
 
 void MainComponent::renderOpenGL()
 {
+    ScopedLock lock(renderLock);
     TRACE_COMPONENT();
     glViewport(0, 0, getWidth(), getHeight());
     OpenGLHelpers::clear(Colours::red);
 
-    nvgBeginFrame(nvg, getWidth(), getHeight(), 1);
-    //std::cout << "================== process render ====================" << std::endl;
+    nvgBeginFrame(nvg, getWidth(), getHeight(), 1.0f);
     processRender(editor.get());
     nvgEndFrame(nvg);
 }
 
-void MainComponent::processRender(NVGComponent* c)
+void MainComponent::processRender(Component* c)
 {
     TRACE_COMPONENT();
     if (c == nullptr || !c->isVisible())
         return;
 
-    if (NVGComponent* nvcComp = dynamic_cast<NVGComponent*>(c)) {
-        //std::cout << "rendering: " << c->getName() << std::endl;
+    if (auto* nvcComp = dynamic_cast<NVGComponent*>(c)) {
         nvcComp->render(nvg);
     }
 
-    if (c->children.size() > 0) {
-        for (auto& child: c->children)
+    if (c->getNumChildComponents() > 0) {
+        for (auto& child: c->getChildren())
             processRender(child);
     }
 }
 
-void MainComponent::processRenderStack(NVGComponent* root)
+void MainComponent::processRenderStack(Component* root)
 {
     TRACE_COMPONENT();
     if (root == nullptr)
         return;
 
-    std::stack<NVGComponent*> componentsStack;
+    std::stack<Component*> componentsStack;
     componentsStack.push(root);
 
     while (!componentsStack.empty()) {
@@ -111,16 +112,16 @@ void MainComponent::processRenderStack(NVGComponent* root)
         if (!currentComponent->isVisible() || !currentComponent->isShowing())
             continue;
 
-        //if (auto nvcComp = dynamic_cast<NVGComponent *>(currentComponent)) {
-            currentComponent->render(nvg);
-        //}
+        if (auto nvcComp = dynamic_cast<NVGComponent *>(currentComponent)) {
+            nvcComp->render(nvg);
+        }
 
-        for (auto& child : currentComponent->children)
+        for (auto& child : currentComponent->getChildren())
             componentsStack.push(child);
     }
 }
 
-void MainComponent::processRenderVector(NVGComponent* root)
+void MainComponent::processRenderVector(Component* root)
 {
     TRACE_COMPONENT();
     if (root == nullptr)

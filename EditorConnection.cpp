@@ -4,14 +4,17 @@
 #include "EditorConnection.h"
 #include "EditorNode.h"
 
-EditorConnection::EditorConnection(NVGComponent* parent, Component *node) : NVGComponent(parent), node(node)
+EditorConnection::EditorConnection(Component *node) :  node(node)
 {
     static int con = 0;
     setName("connection " + String(con++));
+    setAlwaysOnTop(true);
 }
 
 void EditorConnection::renderNVG(NVGcontext *nvg)
 {
+    if (!node)
+        return;
     auto startPos = node->getScreenPosition() - getTopLevelComponent()->getScreenPosition();
     Point<int> endPos;
     if (endNode)

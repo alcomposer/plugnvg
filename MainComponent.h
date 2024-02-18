@@ -16,7 +16,7 @@
 using namespace juce::gl;
 
 #include "nanovg/nanovg.h"
-#define NANOVG_GL3_IMPLEMENTATION
+#define NANOVG_GLES3_IMPLEMENTATION
 #include "nanovg/nanovg_gl.h"
 #include "Editor.h"
 
@@ -28,13 +28,9 @@ using namespace juce::gl;
 class MainComponent   : public OpenGLRenderer, public Component, public Timer
 {
 public:
-    //==============================================================================
     MainComponent();
 
     ~MainComponent();
-
-    //==============================================================================
-    //void paint (juce::Graphics&) override;
 
     void resized() override;
 
@@ -44,15 +40,11 @@ public:
     void renderOpenGL() override;
     void openGLContextClosing() override;
 
-    //void initialise() override;
-    //void shutdown() override;
-    //void render() override;
+    void processRender(Component* node);
+    void processRenderStack(Component* node);
+    void processRenderVector(Component* node);
 
-    void processRender(NVGComponent* node);
-    void processRenderStack(NVGComponent* node);
-    void processRenderVector(NVGComponent* node);
-
-    //CriticalSection renderLock;
+    CriticalSection renderLock;
 
 private:
     OpenGLContext glContext;
@@ -64,8 +56,6 @@ private:
     std::unique_ptr<perfetto::TracingSession> tracingSession;
 #endif
 
-    //==============================================================================
-    // Your private member variables go here...
     std::unique_ptr<juce::ComponentBoundsConstrainer> constrainer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

@@ -9,7 +9,7 @@
 class EditorNodeIolet : public NVGComponent
 {
 public:
-    EditorNodeIolet(NVGComponent* parent) : NVGComponent(parent)
+    EditorNodeIolet()
     {
         static int number = 0;
         setName("iolet " + String(number++));
@@ -23,19 +23,7 @@ public:
 
     void mouseDown(MouseEvent const& e) override;
     void mouseUp(MouseEvent const& e) override;
-
-    void mouseDrag(MouseEvent const& e) override
-    {
-        if (auto iolet = dynamic_cast<EditorNodeIolet*>(getTopLevelComponent()->getComponentAt(e.getScreenPosition() - getTopLevelComponent()->getScreenPosition()))) {
-            if (iolet == this)
-                return;
-            iolet->isActive = true;
-            foundIolet = iolet;
-        } else if (foundIolet) {
-            foundIolet->isActive = false;
-            foundIolet = nullptr;
-        }
-    }
+    void mouseDrag(MouseEvent const& e) override;
 
     void mouseExit(MouseEvent const& e) override
     {
@@ -57,6 +45,6 @@ public:
     EditorNodeIolet* foundIolet = nullptr;
 
 private:
-    EditorConnection* newConnection;
+    SafePointer<EditorConnection> newConnection;
 };
 

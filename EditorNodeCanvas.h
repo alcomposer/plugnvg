@@ -11,24 +11,7 @@
 class EditorNodeCanvas : public NVGComponent
 {
 public:
-    EditorNodeCanvas(NVGComponent* parent) : NVGComponent(parent)
-    {
-        setName("node canvas");
-
-        Random random;
-        Range range = Range<int>(4000, 6000);
-
-#if (TEST_1000 == 1)
-        for (int i = 0; i < 1000; i++) {
-            auto pos = Point<int>(random.nextInt(range), random.nextInt(range));
-            auto node = new EditorNode(this, pos);
-            //node->setCentrePosition(pos);
-            nodes.add(node);
-            addAndMakeVisible(node);
-            addNVGComponent(node);
-        }
-#endif
-    }
+    EditorNodeCanvas();
 
     void mouseDown(MouseEvent const& e) override
     {
@@ -37,11 +20,10 @@ public:
         } else if (e.mods.isLeftButtonDown()){
             isPressed = true;
             auto pos = e.getPosition();
-            auto node = new EditorNode(this, pos);
+            auto node = new EditorNode(pos);
             //node->setCentrePosition(pos);
             nodes.add(node);
             addAndMakeVisible(node);
-            addNVGComponent(node);
         }
     }
     void mouseUp(MouseEvent const& e) override
@@ -79,12 +61,10 @@ public:
         addAndMakeVisible(newConnection);
     }
 
-    void removeConnection()
-    {
-        cons.removeLast();
-    }
+    void removeConnection();
 
 private:
+    //std::shared_ptr<std::mutex> lock;
     bool isPressed = false;
     OwnedArray<EditorNode> nodes;
     OwnedArray<EditorConnection> cons;
