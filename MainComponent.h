@@ -16,7 +16,7 @@
 using namespace juce::gl;
 
 #include "nanovg/nanovg.h"
-#define NANOVG_GLES2_IMPLEMENTATION
+#define NANOVG_GL3_IMPLEMENTATION
 #include "nanovg/nanovg_gl.h"
 #include "Editor.h"
 
@@ -25,7 +25,7 @@ using namespace juce::gl;
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent   : public OpenGLAppComponent, public Timer
+class MainComponent   : public OpenGLRenderer, public Component, public Timer
 {
 public:
     //==============================================================================
@@ -34,21 +34,23 @@ public:
     ~MainComponent();
 
     //==============================================================================
-    void paint (juce::Graphics&) override;
+    //void paint (juce::Graphics&) override;
 
     void resized() override;
 
     void timerCallback() override;
 
-    void initialise() override;
+    void newOpenGLContextCreated() override;
+    void renderOpenGL() override;
+    void openGLContextClosing() override;
 
-    void shutdown() override;
-
-    void render() override;
+    //void initialise() override;
+    //void shutdown() override;
+    //void render() override;
 
     void processRender(NVGComponent* node);
-    void processRenderStack(Component* node);
-    void processRenderVector(Component* node);
+    void processRenderStack(NVGComponent* node);
+    void processRenderVector(NVGComponent* node);
 
     //CriticalSection renderLock;
 

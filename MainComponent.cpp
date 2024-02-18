@@ -16,15 +16,20 @@ MainComponent::MainComponent()
     //resizableBorderComponent->setAlwaysOnTop(true);
     ////resized();
     //mainWindow->Component::addAndMakeVisible(resizableBorderComponent.get());
-    setOpaque(false);
-    //if (auto *peer = getPeer()) {
-    //    peer->setCurrentRenderingEngine(0);
-    //}
-    //glContext.setComponentPaintingEnabled(true);
+    //setOpaque(false);
+    if (auto *peer = getPeer())
+        peer->setCurrentRenderingEngine(0);
+
+    glContext.setComponentPaintingEnabled(false);
     glContext.setOpenGLVersionRequired(OpenGLContext::openGL3_2);
-    auto form = OpenGLPixelFormat(8,8,16,8);
+    glContext.setMultisamplingEnabled(true);
+    auto form = OpenGLPixelFormat(8,8,8,8);
+    form.multisamplingLevel = 3;
     glContext.setPixelFormat(form);
+    glContext.setSwapInterval(0);
+    glContext.setContinuousRepainting(false);
         //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
+    glContext.setRenderer(this);
     glContext.attachTo(*this);
 
     editor = std::make_unique<Editor>(nullptr);
@@ -32,7 +37,7 @@ MainComponent::MainComponent()
 
 
     setSize (600, 600 * (9 / 16.0f));
-    startTimerHz(60);
+    startTimerHz(30);
 }
 
 MainComponent::~MainComponent()
@@ -48,27 +53,28 @@ void MainComponent::timerCallback()
     glContext.triggerRepaint();
 }
 
-void MainComponent::initialise()
+void MainComponent::newOpenGLContextCreated()
 {
-    nvg = nvgCreateGLES2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+    nvg = nvgCreateGL3(0);
 
     if (!nvg)
         std::cout << "could not init nvg" << std::endl;
 }
 
-void MainComponent::shutdown()
+void MainComponent::openGLContextClosing()
 {
+    glContext.deactivateCurrentContext();
 }
 
-void MainComponent::render()
+void MainComponent::renderOpenGL()
 {
     TRACE_COMPONENT();
-    //glViewport(0, 0, getWidth(), getHeight());
-    //OpenGLHelpers::clear(Colours::red);
+    glViewport(0, 0, getWidth(), getHeight());
+    OpenGLHelpers::clear(Colours::red);
 
     nvgBeginFrame(nvg, getWidth(), getHeight(), 1);
     //std::cout << "================== process render ====================" << std::endl;
-    processRender(editor.get());
+    processRenderStack(editor.get());
     nvgEndFrame(nvg);
 }
 
@@ -90,32 +96,32 @@ void MainComponent::processRender(NVGComponent* c)
     }
 }
 
-void MainComponent::processRenderStack(Component* root)
+void MainComponent::processRenderStack(NVGComponent* root)
 {
     TRACE_COMPONENT();
     if (root == nullptr)
         return;
 
-    std::stack<Component*> componentsStack;
+    std::stack<NVGComponent*> componentsStack;
     componentsStack.push(root);
 
     while (!componentsStack.empty()) {
-        Component* currentComponent = componentsStack.top();
+        auto* currentComponent = componentsStack.top();
         componentsStack.pop();
 
         if (!currentComponent->isVisible() || !currentComponent->isShowing())
             continue;
 
-        if (auto nvcComp = dynamic_cast<NVGComponent *>(currentComponent)) {
-            nvcComp->render(nvg);
-        }
+        //if (auto nvcComp = dynamic_cast<NVGComponent *>(currentComponent)) {
+            currentComponent->render(nvg);
+        //}
 
-        for (auto& child : currentComponent->getChildren())
+        for (auto& child : currentComponent->children)
             componentsStack.push(child);
     }
 }
 
-void MainComponent::processRenderVector(Component* root)
+void MainComponent::processRenderVector(NVGComponent* root)
 {
     TRACE_COMPONENT();
     if (root == nullptr)
@@ -151,9 +157,7 @@ void MainComponent::processRenderVector(Component* root)
 }
 
 //==============================================================================
-void MainComponent::paint (juce::Graphics& g)
-{
-}
+
 
 void MainComponent::resized()
 {

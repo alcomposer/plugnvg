@@ -37,6 +37,7 @@ target_compile_definitions(GuiAppExample
         JUCE_USE_XRENDER=1
         PERFETTO=1
         #JUCE_FORCE_DEBUG=1
+        TEST_1000=1
         )
 
 target_link_libraries(GuiAppExample

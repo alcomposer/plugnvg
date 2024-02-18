@@ -18,6 +18,7 @@ public:
         Random random;
         Range range = Range<int>(4000, 6000);
 
+#if (TEST_1000 == 1)
         for (int i = 0; i < 1000; i++) {
             auto pos = Point<int>(random.nextInt(range), random.nextInt(range));
             auto node = new EditorNode(this, pos);
@@ -26,6 +27,7 @@ public:
             addAndMakeVisible(node);
             addNVGComponent(node);
         }
+#endif
     }
 
     void mouseDown(MouseEvent const& e) override
@@ -39,6 +41,7 @@ public:
             //node->setCentrePosition(pos);
             nodes.add(node);
             addAndMakeVisible(node);
+            addNVGComponent(node);
         }
     }
     void mouseUp(MouseEvent const& e) override
