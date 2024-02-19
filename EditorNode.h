@@ -18,21 +18,36 @@ public:
         setName(name);
         setSize(100, 30);
         setCentrePosition(pos);
-        auto ioletPos = 5;
+
+        auto inletPos = 5;
         for (int i = 0; i < 3; i++) {
             auto iolet = new EditorNodeIolet();
             iolets.add(iolet);
             addAndMakeVisible(iolet);
-            iolet->setCentrePosition(ioletPos, 0);
-            iolet->pos.x = ioletPos;
-            ioletPos += 15;
+            iolet->setCentrePosition(inletPos, 0);
+            iolet->pos.x = inletPos;
+            inletPos += 15;
         }
+
+        auto outletPos = 5;
+        addAndMakeVisible(outlet);
+        outlet.setCentrePosition(outletPos, getHeight());
+        outlet.pos.x = outletPos;
+        outlet.pos.y = getHeight();
+
 
         textTex = Image(Image::PixelFormat::ARGB, 100, 30, true);
         auto g = Graphics(textTex);
         g.setFont(juce::Font(18.0f));
-        g.setColour(Colours::black);
+        g.setColour(Colour(255 * .9f, 255 * .9f, 255 * .9f));
+        g.drawRoundedRectangle(1.f, 1.f, 98.f, 28.f, 5.0f, 2.0f);
         g.drawText(name, Rectangle<int>(5,0,95,30), Justification::centredLeft);
+        convertToLinear(textTex, 2.2f);
+    }
+
+    WidgetType getType() override
+    {
+        return WidgetType::Node;
     }
 
     void mouseEnter(MouseEvent const& e) override
@@ -59,9 +74,8 @@ public:
     {
         auto bitmapImage = Image::BitmapData(textTex, 0, 0, 100, 30, Image::BitmapData::readOnly);
         if (nvgImage == -1) {
-
-            /*
-            unsigned char * px = data;
+/*
+            uint8 * px = data;
             for (int i = 0; i < 100; i++) {
                 for (int j = 0; j < 30; j++) {
                     px[0] = bitmapImage.getPixelColour(i,j).getRed();
@@ -71,24 +85,9 @@ public:
                     px += 4;
                 }
             }
-            */
-
+*/
             nvgImage = nvgCreateImageRGBA(nvg, 100, 30, 0, bitmapImage.data);
-        } else {
-            /*
-            unsigned char c = (unsigned char)((1+sinf(t))*0.5f*255.0f);
-            unsigned char* px = data;
-            for (i = 0; i < IMG_SIZE; i++) {
-                for (j = 0; j < IMG_SIZE; j++) {
-                    unsigned char g = (((i>>1) ^ (j>>1)) & 1) * 255;
-                    px[0] = c;
-                    px[1] = c;
-                    px[2] = c;
-                    px[3] = g;
-                    px += 4;
-                }
-            }
-             */
+        } else if (textNeedsUpdate){
             nvgUpdateImage(nvg, nvgImage, bitmapImage.data);
         }
 
@@ -106,16 +105,45 @@ public:
         nvgFill(nvg);
         nvgFillPaint(nvg, imgPaint);
         nvgFill(nvg);
-        nvgStrokeColor(nvg, nvgRGBf(.9, .9, .9));
-        nvgStrokeWidth(nvg, 1.f);
-        nvgStroke(nvg);
+        //nvgStrokeColor(nvg, nvgRGBf(.9, .9, .9));
+        //nvgStrokeWidth(nvg, 1.f);
+        //nvgStroke(nvg);
         nvgClosePath(nvg);
     }
+
+    void applyGammaCorrection(juce::Image& image, float gamma) {
+        juce::Image::BitmapData bitmapData(image, juce::Image::BitmapData::writeOnly);
+
+    // Iterate through each pixel in the image
+    for (int y = 0; y < bitmapData.height; ++y) {
+        for (int x = 0; x < bitmapData.width; ++x) {
+            // Get the color of the pixel
+            juce::Colour pixelColour(bitmapData.getPixelColour(x, y));
+
+            // Apply gamma correction to each color channel
+            float r = std::pow(pixelColour.getFloatRed(), gamma);
+            float g = std::pow(pixelColour.getFloatGreen(), gamma);
+            float b = std::pow(pixelColour.getFloatBlue(), gamma);
+            float a = pixelColour.getFloatAlpha();
+
+            // Set the corrected color to the pixel
+            bitmapData.setPixelColour(x, y, Colour(PixelARGB(a * 255, r * 255, g * 255, b * 255)));
+        }
+    }
+}
+
+// Function to convert gamma corrected image to linear space
+void convertToLinear(juce::Image& image, float gamma) {
+    // Apply inverse gamma correction to convert back to linear space
+    applyGammaCorrection(image, 1.0f / gamma);
+}
 private:
     Image textTex;
+    bool textNeedsUpdate = false;
     unsigned char data[100*30*4];
     int nvgImage = -1;
     Point<int> pos;
     bool isHover = false;
     OwnedArray<EditorNodeIolet> iolets;
+    EditorNodeIolet outlet;
 };

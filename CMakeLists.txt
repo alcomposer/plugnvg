@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.15)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory("libraries/JUCE")
-add_subdirectory("libraries/nanovg")
+#add_subdirectory("libraries/nanovg")
+add_subdirectory("libraries/nanovg-dev")
+include_directories("libraries/nanovg-dev")
+
 add_subdirectory("libraries/melatonin_perfetto")
 
 project(GUI_APP_EXAMPLE VERSION 0.0.1)
@@ -52,7 +55,8 @@ target_link_libraries(GuiAppExample
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
         juce::juce_opengl
-        test::nanovg
+        #test::nanovg
+        nanovg
         Melatonin::Perfetto
         )
 

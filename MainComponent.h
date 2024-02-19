@@ -15,9 +15,6 @@
 #include <juce_opengl/juce_opengl.h>
 using namespace juce::gl;
 
-#include "nanovg/nanovg.h"
-#define NANOVG_GLES3_IMPLEMENTATION
-#include "nanovg/nanovg_gl.h"
 #include "Editor.h"
 
 //==============================================================================

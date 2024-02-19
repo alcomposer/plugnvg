@@ -5,3 +5,6 @@
 	path = libraries/melatonin_perfetto
 	url = https://github.com/sudara/melatonin_perfetto.git
 	branch = main
+[submodule "libraries/nanovg-dev"]
+	path = libraries/nanovg-dev
+	url = https://github.com/rgb2hsv/nanovg.git

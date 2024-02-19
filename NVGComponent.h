@@ -5,11 +5,13 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include <nanovg.h>
+#include "libraries/nanovg-dev/src/nanovg.h"
 
 class NVGComponent : public Component
 {
 public:
+    enum WidgetType {None = 0, Connection = 1, Node = 2, Iolet = 4};
+
     NVGComponent(){}
 
     virtual void renderNVG(NVGcontext* nvg) = 0;
@@ -18,4 +20,6 @@ public:
     {
         renderNVG(nvg);
     }
+
+    virtual WidgetType getType() { return None; }
 };

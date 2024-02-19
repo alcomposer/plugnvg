@@ -40,6 +40,11 @@ public:
         nvgFill(nvg);
     }
 
+    WidgetType getType() override
+    {
+        return WidgetType::Iolet;
+    }
+
     Point<int> pos;
     bool isActive = false;
     EditorNodeIolet* foundIolet = nullptr;
