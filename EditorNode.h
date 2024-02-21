@@ -12,28 +12,32 @@ class EditorNode : public NVGComponent
 public:
     EditorNode(Point<int> pos) : pos(pos)
     {
-        setInterceptsMouseClicks(true, false);
+        //setInterceptsMouseClicks(true, true);
         static int nodeNumber = 0;
         auto name = String("node: " + String(nodeNumber++));
         setName(name);
-        setSize(100, 30);
+        setSize(100 + (border * 2), 30 + (border * 2));
         setCentrePosition(pos);
 
-        auto inletPos = 5;
+        // setup iolets
+        auto inletPos = 10;
         for (int i = 0; i < 3; i++) {
-            auto iolet = new EditorNodeIolet();
+            auto iolet = new EditorNodeIolet(EditorNodeIolet::Iolet::Inlet);
+            //addMouseListener(iolet, true);
             iolets.add(iolet);
             addAndMakeVisible(iolet);
-            iolet->setCentrePosition(inletPos, 0);
-            iolet->pos.x = inletPos;
+            iolet->setCentrePosition(inletPos + border, border);
+            iolet->pos.x = inletPos + border;
+            iolet->pos.y = border;
             inletPos += 15;
         }
 
-        auto outletPos = 5;
+        auto outletPos = 10;
+        //addMouseListener(&outlet, true);
         addAndMakeVisible(outlet);
-        outlet.setCentrePosition(outletPos, getHeight());
-        outlet.pos.x = outletPos;
-        outlet.pos.y = getHeight();
+        outlet.setCentrePosition(outletPos + border, getHeight() - border);
+        outlet.pos.x = outletPos + border;
+        outlet.pos.y = getHeight() - border;
 
 
         textTex = Image(Image::PixelFormat::ARGB, 100, 30, true);
@@ -58,6 +62,22 @@ public:
     void mouseExit(MouseEvent const& e) override
     {
         isHover = false;
+    }
+
+    bool hitTest(int x, int y) override
+    {
+        if (getLocalBounds().reduced(border).contains(x, y))
+            return true;
+
+        for (auto& iolet : iolets) {
+            if (iolet->getBoundsInParent().contains(x, y))
+                return true;
+        }
+
+        if (outlet.getBoundsInParent().contains(x, y))
+            return true;
+
+        return false;
     }
 
     void mouseDrag(MouseEvent const& e) override
@@ -94,7 +114,7 @@ public:
 
 
         auto parentLeft = getParentComponent()->getBounds().getTopLeft();
-        auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY());
+        auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
         nvgBeginPath(nvg);
         auto cSelect = nvgRGBf(.3, .3, .3);
         auto cDefault = nvgRGBf(.2, .2, .2);
@@ -144,6 +164,7 @@ private:
     int nvgImage = -1;
     Point<int> pos;
     bool isHover = false;
+    int border = 8;
     OwnedArray<EditorNodeIolet> iolets;
     EditorNodeIolet outlet;
 };

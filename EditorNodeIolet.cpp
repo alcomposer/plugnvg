@@ -14,10 +14,12 @@ void EditorNodeIolet::mouseDown(MouseEvent const& e)
 }
 
 void EditorNodeIolet::mouseDrag(MouseEvent const &e) {
-    foundIolet = nullptr;
     if (auto iolet = dynamic_cast<EditorNodeIolet*>(getTopLevelComponent()->getComponentAt(e.getScreenPosition() - getTopLevelComponent()->getScreenPosition()))) {
         if (iolet == this)
             return;
+        if (foundIolet)
+            foundIolet->isActive = false;
+
         iolet->isActive = true;
         foundIolet = iolet;
     } else if (foundIolet) {

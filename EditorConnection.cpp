@@ -45,10 +45,10 @@ void EditorConnection::renderNVG(NVGcontext *nvg)
         nvgBeginPath(nvg);
         nvgMoveTo(nvg, startPos.x, startPos.y);
         nvgLineStyle(nvg, NVG_LINE_SOLID);
-        Point<int> cPoint1 = Point<int>(startPos.x, ((endPos.y - startPos.y) * 0.25f) + startPos.y);
-        Point<int> cPoint2 = Point<int>(endPos.x, ((endPos.y - startPos.y) * 0.75f) + startPos.y);
+        const auto cPoint1 = Point<float>(startPos.x, ((endPos.y - startPos.y) * 0.25f) + startPos.y);
+        const auto cPoint2 = Point<float>(endPos.x, ((endPos.y - startPos.y) * 0.75f) + startPos.y);
         nvgBezierTo(nvg, cPoint1.x, cPoint1.y, cPoint2.x, cPoint2.y, endPos.x, endPos.y);
-        nvgStrokeColor(nvg, nvgRGBA(40, 40, 40, 255));
+        nvgStrokeColor(nvg, nvgRGBA(50, 50, 50, 255));
         nvgLineCap(nvg, NVG_ROUND);
         nvgStrokeWidth(nvg, 4.0f);
 //        nvgClosePath(nvg);

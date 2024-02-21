@@ -29,12 +29,12 @@ MainComponent::MainComponent()
         peer->setCurrentRenderingEngine(0);
 
     glContext.setComponentPaintingEnabled(false);
-    glContext.setOpenGLVersionRequired(OpenGLContext::openGL3_2);
+    glContext.setOpenGLVersionRequired(OpenGLContext::defaultGLVersion);
     //glContext.setMultisamplingEnabled(true);
     auto form = OpenGLPixelFormat(8,8,16,8);
     //form.multisamplingLevel = 2;
     glContext.setPixelFormat(form);
-    glContext.setSwapInterval(1);
+    glContext.setSwapInterval(2);
     glContext.setContinuousRepainting(true);
     //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
