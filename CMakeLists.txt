@@ -43,13 +43,14 @@ target_compile_definitions(GuiAppExample
         JUCE_USE_XRENDER=1
         PERFETTO=0
         #JUCE_FORCE_DEBUG=1
-        #TEST_1000=1
+        #ATEST_1000=1
         )
 
 target_link_libraries(GuiAppExample
     PRIVATE
         # GuiAppData            # If we'd created a binary data target, we'd link to it here
         juce::juce_gui_extra
+        juce::juce_gui_basics
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

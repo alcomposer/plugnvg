@@ -18,6 +18,7 @@ public:
 
     void render(NVGcontext* nvg)
     {
+        //TRACE_COMPONENT();
         renderNVG(nvg);
     }
 

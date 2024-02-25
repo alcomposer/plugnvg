@@ -17,7 +17,7 @@ public:
         auto name = String("node: " + String(nodeNumber++));
         setName(name);
         setSize(100 + (border * 2), 30 + (border * 2));
-        setCentrePosition(pos);
+        setTopLeftPosition(pos);
 
         // setup iolets
         auto inletPos = 10;
@@ -49,6 +49,8 @@ public:
         convertToLinear(textTex, 2.2f);
     }
 
+    ~EditorNode(){};
+
     WidgetType getType() override
     {
         return WidgetType::Node;
@@ -62,6 +64,14 @@ public:
     void mouseExit(MouseEvent const& e) override
     {
         isHover = false;
+    }
+
+    void mouseDown(MouseEvent const& e) override;
+
+    void mouseUp(MouseEvent const& e) override
+    {
+        setCentrePosition(pos);
+        setMouseCursor(MouseCursor::NormalCursor);
     }
 
     bool hitTest(int x, int y) override
@@ -80,15 +90,7 @@ public:
         return false;
     }
 
-    void mouseDrag(MouseEvent const& e) override
-    {
-        //if (lock.tryEnter())
-        if (e.originalComponent != this)
-            return;
-        pos = e.getScreenPosition() - getParentComponent()->getScreenPosition();
-        //std::cout << "pos: " << pos.toString() << std::endl;
-        setCentrePosition(pos);
-    }
+    void mouseDrag(MouseEvent const& e) override;
 
     void renderNVG(NVGcontext* nvg) override
     {
@@ -111,15 +113,30 @@ public:
             nvgUpdateImage(nvg, nvgImage, bitmapImage.data);
         }
 
-
-
         auto parentLeft = getParentComponent()->getBounds().getTopLeft();
-        auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
+        //std::cout << "parent top left:" << parentLeft.toString() << "node pos is: " << pos.toString() << "position on screen: " << (parentLeft + pos).toString() << std::endl;
+        //auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
+        auto b = Rectangle<int>(pos.x + parentLeft.x, pos.y + parentLeft.y, getWidth(), getHeight()).reduced(border);
+        setTopLeftPosition(pos);
         nvgBeginPath(nvg);
         auto cSelect = nvgRGBf(.3, .3, .3);
         auto cDefault = nvgRGBf(.2, .2, .2);
-        auto colour = isHover ? cSelect : cDefault;
+
+        // we need to check if the var pointer is valid before we dereference it!
+        //if (auto selected = getProperties().getVarPointer("is_selected"))
+        //    isSelected = static_cast<bool>(*selected);
+
+        auto colour = cDefault;
+        auto selectedColour = nvgRGBf(.3f, .3f, 1.f);
+
+
         nvgRoundedRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight(), 5);
+        if (isSelected) {
+            nvgStrokeColor(nvg, selectedColour);
+            nvgStrokeWidth(nvg, 8.0f);
+            nvgStroke(nvg);
+        }
+
         auto imgPaint = nvgImagePattern(nvg, b.getX(), b.getY(), 100, 30, 0, nvgImage, 1.0f);
         nvgFillColor(nvg, colour);
         nvgFill(nvg);
@@ -157,6 +174,11 @@ void convertToLinear(juce::Image& image, float gamma) {
     // Apply inverse gamma correction to convert back to linear space
     applyGammaCorrection(image, 1.0f / gamma);
 }
+
+    bool isSelected = false;
+
+    Point<int> mouseDownPos;
+
 private:
     Image textTex;
     bool textNeedsUpdate = false;
@@ -165,6 +187,8 @@ private:
     Point<int> pos;
     bool isHover = false;
     int border = 8;
+
+    Point<int> dragDelta;
     OwnedArray<EditorNodeIolet> iolets;
     EditorNodeIolet outlet;
 };

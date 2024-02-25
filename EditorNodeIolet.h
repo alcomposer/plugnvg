@@ -38,24 +38,27 @@ public:
         auto parentPos = getParentComponent()->getPosition();
         auto canvasPos = getParentComponent()->getParentComponent()->getPosition();
         auto finalPos = parentPos + canvasPos + pos;
+        //nvgSave(nvg);
         nvgBeginPath(nvg);
         nvgCircle(nvg, finalPos.x, finalPos.y, isActive ? 8 : 5);
         if (!isActive) {
-            nvgSave(nvg);
-            if (ioletType == Iolet::Outlet)
-                nvgScissor(nvg, finalPos.x - 7, finalPos.y - 9, 14, 9);
-            else
-                nvgScissor(nvg, finalPos.x - 7, finalPos.y, 14, 9);
+
+            //if (ioletType == Iolet::Outlet)
+                //nvgScissor(nvg, finalPos.x - 7, finalPos.y - 9, 14, 9);
+            //else
+                //nvgScissor(nvg, finalPos.x - 7, finalPos.y, 14, 9);
             nvgStrokeColor(nvg, nvgRGBA(255, 255, 255, 255));
             nvgStrokeWidth(nvg, 2.0f);
             nvgStroke(nvg);
             nvgFillColor(nvg, nvgRGBA(255, 0, 0, 255)); // Red color
             nvgFill(nvg);
-            nvgRestore(nvg);
+
         } else {
+
             nvgFillColor(nvg, nvgRGBA(255, 0, 0, 255)); // Red color
             nvgFill(nvg);
         }
+        //nvgRestore(nvg);
     }
 
     WidgetType getType() override

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "libraries/nanovg-dev/src/nanovg.h"
-#define NANOVG_GL3_IMPLEMENTATION
+#define NANOVG_GLES3_IMPLEMENTATION
 #include "libraries/nanovg-dev/src/nanovg_gl.h"
 
 //#include "NVGComponent.h"
@@ -29,13 +29,13 @@ MainComponent::MainComponent()
         peer->setCurrentRenderingEngine(0);
 
     glContext.setComponentPaintingEnabled(false);
-    glContext.setOpenGLVersionRequired(OpenGLContext::defaultGLVersion);
+    glContext.setOpenGLVersionRequired(OpenGLContext::OpenGLVersion::openGL3_2);
     //glContext.setMultisamplingEnabled(true);
     auto form = OpenGLPixelFormat(8,8,16,8);
     //form.multisamplingLevel = 2;
     glContext.setPixelFormat(form);
-    glContext.setSwapInterval(2);
-    glContext.setContinuousRepainting(true);
+    //glContext.setSwapInterval(1);
+    glContext.setContinuousRepainting(false);
     //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
     glContext.attachTo(*this);
@@ -44,7 +44,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(editor.get());
 
     setSize (600, 600 * (9 / 16.0f));
-    //startTimerHz(60);
+    startTimerHz(60);
 }
 
 MainComponent::~MainComponent()
@@ -62,7 +62,7 @@ void MainComponent::timerCallback()
 
 void MainComponent::newOpenGLContextCreated()
 {
-    nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+    nvg = nvgCreateGLES3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
     if (!nvg)
         std::cout << "could not init nvg" << std::endl;
@@ -75,10 +75,10 @@ void MainComponent::openGLContextClosing()
 
 void MainComponent::renderOpenGL()
 {
-    ScopedLock lock(renderLock);
     TRACE_COMPONENT();
+    ScopedLock lock(renderLock);
     glViewport(0, 0, getWidth(), getHeight());
-    OpenGLHelpers::clear(Colours::red);
+    OpenGLHelpers::clear(Colours::black);
 
     nvgBeginFrame(nvg, getWidth(), getHeight(), 1.0f);
     processRender(editor.get());
@@ -87,7 +87,7 @@ void MainComponent::renderOpenGL()
 
 void MainComponent::processRender(Component* c)
 {
-    TRACE_COMPONENT();
+    //TRACE_COMPONENT();
     if (c == nullptr || !c->isVisible())
         return;
 
@@ -96,15 +96,13 @@ void MainComponent::processRender(Component* c)
         if ((type == NVGComponent::WidgetType::Node) || (type == NVGComponent::WidgetType::Iolet)) {
             if (nvgComp->getScreenBounds().intersects(editor->getScreenBounds())) {
                 nvgComp->render(nvg);
-                //std::cout << "rendering; " << nvgComp->getName() << std::endl;
             }
         } else {
             nvgComp->render(nvg);
-            //std::cout << "rendering; " << nvgComp->getName() << std::endl;
         }
     }
 
-    if (c->getNumChildComponents() > 0) {
+    if ((c->getNumChildComponents() > 0) && c->isVisible()) {
         for (auto& child: c->getChildren())
             processRender(child);
     }
@@ -112,7 +110,7 @@ void MainComponent::processRender(Component* c)
 
 void MainComponent::processRenderStack(Component* root)
 {
-    TRACE_COMPONENT();
+    //TRACE_COMPONENT();
     if (root == nullptr)
         return;
 
@@ -123,7 +121,7 @@ void MainComponent::processRenderStack(Component* root)
         auto* currentComponent = componentsStack.top();
         componentsStack.pop();
 
-        if (!currentComponent->isVisible() || !currentComponent->isShowing())
+        if (!currentComponent->isVisible())
             continue;
 
         if (auto nvcComp = dynamic_cast<NVGComponent *>(currentComponent)) {
@@ -137,7 +135,7 @@ void MainComponent::processRenderStack(Component* root)
 
 void MainComponent::processRenderVector(Component* root)
 {
-    TRACE_COMPONENT();
+    //TRACE_COMPONENT();
     if (root == nullptr)
         return;
 
@@ -150,7 +148,7 @@ void MainComponent::processRenderVector(Component* root)
         Component* current = stack.back();
         stack.pop_back();
 
-        if (!current->isVisible() || !current->isShowing())
+        if (!current->isVisible())
             continue;
 
         if (auto nvcComp = reinterpret_cast<NVGComponent*>(current)) {
@@ -165,8 +163,9 @@ void MainComponent::processRenderVector(Component* root)
     }
 
     // Now, render the collected NVGComponents
-    for (NVGComponent* nvgComp : nvgComponents) {
-        nvgComp->render(nvg);
+    for (auto it = nvgComponents.rbegin(); it != nvgComponents.rend(); ++it) {
+       auto& node = *it;
+       node->render(nvg);
     }
 }
 

@@ -17,14 +17,13 @@ public:
         setName("editor");
         nodeCanvas = std::make_unique<EditorNodeCanvas>();
         addAndMakeVisible(nodeCanvas.get());
-        nodeCanvas->setSize(10000, 10000);
-        nodeCanvas->setTopLeftPosition(-5000, -5000);
         topPanel = std::make_unique<EditorTopPanel>();
         addAndMakeVisible(topPanel.get());
     }
 
     void renderNVG(NVGcontext* nvg) override
     {
+        return;
         auto b = getBounds();
         nvgBeginPath(nvg);
         nvgFillColor(nvg, nvgRGBAf(1, 1, 0, 1));
