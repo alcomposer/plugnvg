@@ -22,23 +22,26 @@ public:
         // setup iolets
         auto inletPos = 10;
         for (int i = 0; i < 3; i++) {
-            auto iolet = new EditorNodeIolet(EditorNodeIolet::Iolet::Inlet);
-            //addMouseListener(iolet, true);
-            iolets.add(iolet);
-            addAndMakeVisible(iolet);
-            iolet->setCentrePosition(inletPos + border, border);
-            iolet->pos.x = inletPos + border;
-            iolet->pos.y = border;
+            auto inlet = new EditorNodeIolet(EditorNodeIolet::Iolet::Inlet);
+            inlets.add(inlet);
+            addAndMakeVisible(inlet);
+            inlet->setCentrePosition(inletPos + border, border);
+            inlet->pos.x = inletPos + border;
+            inlet->pos.y = border;
             inletPos += 15;
         }
 
+        // setup outlets
         auto outletPos = 10;
-        //addMouseListener(&outlet, true);
-        addAndMakeVisible(outlet);
-        outlet.setCentrePosition(outletPos + border, getHeight() - border);
-        outlet.pos.x = outletPos + border;
-        outlet.pos.y = getHeight() - border;
-
+        for (int i = 0; i < 3; i++) {
+            auto outlet = new EditorNodeIolet(EditorNodeIolet::Iolet::Outlet);
+            outlets.add(outlet);
+            addAndMakeVisible(outlet);
+            outlet->setCentrePosition(outletPos + border, getHeight() - border);
+            outlet->pos.x = outletPos + border;
+            outlet->pos.y = getHeight() - border;
+            inletPos += 15;
+        }
 
         textTex = Image(Image::PixelFormat::ARGB, 100, 30, true);
         auto g = Graphics(textTex);
@@ -79,13 +82,15 @@ public:
         if (getLocalBounds().reduced(border).contains(x, y))
             return true;
 
-        for (auto& iolet : iolets) {
-            if (iolet->getBoundsInParent().contains(x, y))
+        for (auto& inlet : inlets) {
+            if (inlet->getBoundsInParent().contains(x, y))
                 return true;
         }
 
-        if (outlet.getBoundsInParent().contains(x, y))
-            return true;
+        for (auto& outlet : outlets) {
+            if (outlet->getBoundsInParent().contains(x, y))
+                return true;
+        }
 
         return false;
     }
@@ -189,6 +194,6 @@ private:
     int border = 8;
 
     Point<int> dragDelta;
-    OwnedArray<EditorNodeIolet> iolets;
-    EditorNodeIolet outlet;
+    OwnedArray<EditorNodeIolet> inlets;
+    OwnedArray<EditorNodeIolet> outlets;
 };

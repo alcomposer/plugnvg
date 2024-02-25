@@ -5,18 +5,20 @@
 #pragma once
 #include "NVGComponent.h"
 
+
 class EditorNode;
+class EditorNodeIolet;
 class EditorConnection : public NVGComponent
 {
 public:
-    EditorConnection(Component* node);
+    EditorConnection(EditorNodeIolet* node);
 
-    void renderNVG(NVGcontext * nvg) override;
+    void renderNVG(NVGcontext* nvg) override;
 
     Component* endNode = nullptr;
 
 private:
-    Component* node;
+    EditorNodeIolet* node;
     bool isStraight = false;
 };
 

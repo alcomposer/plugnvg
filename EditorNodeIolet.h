@@ -3,15 +3,12 @@
 //
 #pragma once
 #include "NVGComponent.h"
-#include "EditorConnection.h"
 
-
+class EditorConnection;
 class EditorNodeIolet : public NVGComponent
 {
 public:
     enum Iolet {Inlet, Outlet};
-
-    Iolet ioletType;
 
     EditorNodeIolet(Iolet type = Iolet::Outlet) : ioletType(type)
     {
@@ -66,6 +63,7 @@ public:
         return WidgetType::Iolet;
     }
 
+    Iolet ioletType;
     Point<int> pos;
     bool isActive = false;
     EditorNodeIolet* foundIolet = nullptr;

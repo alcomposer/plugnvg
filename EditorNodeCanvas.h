@@ -79,7 +79,6 @@ public:
 
     void renderNVG(NVGcontext* nvg) override
     {
-        return;
         // instead of locking (which would never work anyway) we make Juce update the position of the canvas
         // from the openGL callback. This way it will be the same position during the entire opengl render call
         TRACE_COMPONENT();
