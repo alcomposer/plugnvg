@@ -76,7 +76,7 @@ class MainWindow    : public juce::DocumentWindow
     {
     public:
         explicit MainWindow (juce::String name)
-            : DocumentWindow ("non-native window resize test",
+            : DocumentWindow ("pure nanovg plugdata test",
                               juce::Desktop::getInstance().getDefaultLookAndFeel()
                                                           .findColour (ResizableWindow::backgroundColourId),
                               DocumentWindow::allButtons)
