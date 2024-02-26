@@ -40,7 +40,7 @@ public:
             outlet->setCentrePosition(outletPos + border, getHeight() - border);
             outlet->pos.x = outletPos + border;
             outlet->pos.y = getHeight() - border;
-            inletPos += 15;
+            outletPos += 15;
         }
 
         textTex = Image(Image::PixelFormat::ARGB, 100, 30, true);
@@ -49,7 +49,7 @@ public:
         g.setColour(Colour(255 * .9f, 255 * .9f, 255 * .9f));
         g.drawRoundedRectangle(1.f, 1.f, 98.f, 28.f, 5.0f, 2.0f);
         g.drawText(name, Rectangle<int>(5,0,95,30), Justification::centredLeft);
-        convertToLinear(textTex, 2.2f);
+        //convertToLinear(textTex, 2.2f);
     }
 
     ~EditorNode(){};
@@ -114,15 +114,17 @@ public:
             }
 */
             nvgImage = nvgCreateImageRGBA(nvg, 100, 30, 0, bitmapImage.data);
+            std::cout << "image hash: " << nvgImage << std::endl;
         } else if (textNeedsUpdate){
             nvgUpdateImage(nvg, nvgImage, bitmapImage.data);
         }
 
         auto parentLeft = getParentComponent()->getBounds().getTopLeft();
-        //std::cout << "parent top left:" << parentLeft.toString() << "node pos is: " << pos.toString() << "position on screen: " << (parentLeft + pos).toString() << std::endl;
         //auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
         auto b = Rectangle<int>(pos.x + parentLeft.x, pos.y + parentLeft.y, getWidth(), getHeight()).reduced(border);
+        //auto b = Rectangle<int>(pos.x, pos.y, getWidth(), getHeight()).reduced(border);
         setTopLeftPosition(pos);
+        //nvgTranslate(nvg, parentLeft.x, parentLeft.y);
         nvgBeginPath(nvg);
         auto cSelect = nvgRGBf(.3, .3, .3);
         auto cDefault = nvgRGBf(.2, .2, .2);
@@ -150,7 +152,8 @@ public:
         //nvgStrokeColor(nvg, nvgRGBf(.9, .9, .9));
         //nvgStrokeWidth(nvg, 1.f);
         //nvgStroke(nvg);
-        nvgClosePath(nvg);
+        //nvgClosePath(nvg);
+        //nvgTranslate(nvg, -parentLeft.x, parentLeft.y);
     }
 
     void applyGammaCorrection(juce::Image& image, float gamma) {

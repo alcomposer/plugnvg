@@ -28,14 +28,18 @@ MainComponent::MainComponent()
     if (auto *peer = getPeer())
         peer->setCurrentRenderingEngine(0);
 
-    glContext.setComponentPaintingEnabled(false);
+
     glContext.setOpenGLVersionRequired(OpenGLContext::OpenGLVersion::openGL3_2);
-    //glContext.setMultisamplingEnabled(true);
+    glContext.setComponentPaintingEnabled(false);
+    /*
+    glContext.setMultisamplingEnabled(true);
     auto form = OpenGLPixelFormat(8,8,16,8);
-    //form.multisamplingLevel = 2;
+    form.multisamplingLevel = 2;
     glContext.setPixelFormat(form);
-    //glContext.setSwapInterval(1);
+    */
     glContext.setContinuousRepainting(false);
+    glContext.setSwapInterval(1);
+
     //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
     glContext.attachTo(*this);
@@ -43,7 +47,7 @@ MainComponent::MainComponent()
     editor = std::make_unique<Editor>();
     addAndMakeVisible(editor.get());
 
-    setSize (600, 600 * (9 / 16.0f));
+    setSize (1200, 600);
     startTimerHz(60);
 }
 
@@ -102,7 +106,7 @@ void MainComponent::processRender(Component* c)
         }
     }
 
-    if ((c->getNumChildComponents() > 0) && c->isVisible()) {
+    if (c->isVisible() /*&& (c->getNumChildComponents() > 0)*/ ) {
         for (auto& child: c->getChildren())
             processRender(child);
     }

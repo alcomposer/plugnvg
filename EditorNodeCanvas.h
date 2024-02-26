@@ -84,16 +84,44 @@ public:
         TRACE_COMPONENT();
         setTopLeftPosition(delta);
         //return;
-        auto b = Rectangle<int>(delta.x, delta.y, canvasSize, canvasSize);
-        //std::cout << "canvas bounds= " << b.toString() << std::endl;
+        auto b = Rectangle<int>(0, 0, canvasSize, canvasSize);
+
+        // apply translation to the canvas nvg objects
+        nvgTranslate(nvg, delta.x, delta.y);
+
         nvgBeginPath(nvg);
-        auto defaultColor = nvgRGBf(.3, .3, .3);
-        auto selectedColor = nvgRGBf(.2, .2, .2);
-        auto finalColor = isPressed ? selectedColor : defaultColor;
-        nvgFillColor(nvg, defaultColor);
-        nvgRoundedRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight(), 10);
+        auto bgColour = nvgRGBf(.15, .15, .15);
+        auto dots = nvgDotPattern(nvg, nvgRGBf(.4, .4, .4), bgColour);
+        auto grad = nvgRadialGradient(nvg, 100000, 100000, 10, 100, nvgRGBf(1.0, 1.0, 1.0), bgColour);
+        nvgFillPaint(nvg, dots);
+        nvgRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight());
         nvgFill(nvg);
-        nvgClosePath(nvg);
+
+        nvgBeginPath(nvg);
+        auto pos = Point<int>(halfSize, halfSize);
+        nvgMoveTo(nvg, pos.x, pos.y + 100000);
+        nvgLineTo(nvg, pos.x, pos.y);
+        nvgLineTo(nvg, pos.x + 100000, pos.y);
+
+        // place solid line behind (to fake removeing grid points for now)
+        nvgLineStyle(nvg, NVG_LINE_SOLID);
+        nvgStrokeColor(nvg, bgColour);
+        nvgStrokeWidth(nvg, 6.0f);
+        nvgStroke(nvg);
+
+        // draw 0,0 point lines
+        nvgLineStyle(nvg, NVG_LINE_DASHED);
+        nvgStrokeColor(nvg, nvgRGBf(1, 1, 1));
+        nvgStrokeWidth(nvg, 1.0f);
+        nvgStroke(nvg);
+
+        nvgLineStyle(nvg, NVG_LINE_SOLID);
+
+
+        // remove the translation for now
+        // we will probably keep this translation for the whole canvas
+        // including for zooming
+        nvgTranslate(nvg, -delta.x, -delta.y);
     }
 
     void addConnection(EditorConnection* newConnection)

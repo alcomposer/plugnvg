@@ -18,7 +18,6 @@ void EditorConnection::renderNVG(NVGcontext *nvg)
         return;
 
     auto mouse = Desktop::getInstance().getMainMouseSource().getScreenPosition();
-    std::cout << "mouse is: " << mouse.toString() << std::endl;
     auto startPos = node->getScreenBounds().toFloat().getCentre() - getTopLevelComponent()->getScreenPosition().toFloat();
     Point<float> endPos;
     if (endNode)
@@ -65,12 +64,23 @@ void EditorConnection::renderNVG(NVGcontext *nvg)
             cp2 = cPoint1;
         }
 
+        // semi-transparent background line
         nvgBeginPath(nvg);
         nvgMoveTo(nvg, start.x, start.y);
         nvgBezierTo(nvg, cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-        nvgStrokeColor(nvg, nvgRGBA(50, 50, 50, 255));
+        nvgStrokeColor(nvg, nvgRGBA(45, 45, 45, 100));
         nvgLineCap(nvg, NVG_ROUND);
         nvgStrokeWidth(nvg, 6.0f);
+        nvgLineStyle(nvg, NVG_LINE_SOLID);
+        nvgStroke(nvg);
+
+        // solid background line
+        nvgBeginPath(nvg);
+        nvgMoveTo(nvg, start.x, start.y);
+        nvgBezierTo(nvg, cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
+        nvgStrokeColor(nvg, nvgRGBA(55, 55, 55, 255));
+        nvgLineCap(nvg, NVG_ROUND);
+        nvgStrokeWidth(nvg, 3.5f);
         nvgLineStyle(nvg, NVG_LINE_SOLID);
         nvgStroke(nvg);
 
@@ -78,9 +88,9 @@ void EditorConnection::renderNVG(NVGcontext *nvg)
         nvgBeginPath(nvg);
         nvgMoveTo(nvg, start.x, start.y);
         nvgBezierTo(nvg, cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-        nvgLineStyle(nvg, NVG_LINE_DASHED);
-        nvgStrokeColor(nvg, nvgRGBA(255, 255, 255, 255));
-        nvgStrokeWidth(nvg, 3.0f);
+        nvgLineStyle(nvg, cableType == CableType::Signal ? NVG_LINE_DASHED : NVG_LINE_SOLID);
+        nvgStrokeColor(nvg, nvgRGBA(250, 250, 250, 255));
+        nvgStrokeWidth(nvg, 2.0f);
         nvgStroke(nvg);
         nvgLineStyle(nvg, NVG_LINE_SOLID);
 

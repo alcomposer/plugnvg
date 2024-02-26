@@ -11,6 +11,9 @@ class EditorNodeIolet;
 class EditorConnection : public NVGComponent
 {
 public:
+
+    enum CableType {Data, Signal, MCSignal};
+
     EditorConnection(EditorNodeIolet* node);
 
     void renderNVG(NVGcontext* nvg) override;
@@ -20,5 +23,6 @@ public:
 private:
     EditorNodeIolet* node;
     bool isStraight = false;
+    CableType cableType = Data;
 };
 
