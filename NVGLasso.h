@@ -13,10 +13,12 @@ public:
 
     void resized()
     {
-        b = getBounds() - getTopLevelComponent()->getScreenPosition();
+        b = getBounds();
+        std::cout << "bounds: " << b.toString() << std::endl;
     }
 
-    void renderNVG(NVGcontext *nvg) override {
+    void renderNVG(NVGWrapper *nvgWrapper) override {
+        auto nvg = nvgWrapper->nvg;
         auto defaultColor = nvgRGBAf(.3f, .3f, 1.f, 0.2f);
         auto outlineColour = nvgRGBf(.3f, .3f, 1.f);
         nvgBeginPath(nvg);
@@ -42,7 +44,7 @@ public:
 
     void resized()
     {
-        lassoDrawing.setBounds(getScreenBounds());
+        lassoDrawing.setBounds(getBoundsInParent());
     }
 private:
     NVGLassoDrawing lassoDrawing;

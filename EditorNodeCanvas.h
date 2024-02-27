@@ -10,6 +10,40 @@
 #include "EditorConnection.h"
 #include "NVGLasso.h"
 
+
+class TestComp : public NVGComponent
+{
+public:
+    TestComp()
+    {
+        setBounds(100000, 100000, 50, 50);
+    }
+
+    bool hitTest(int x, int y) override
+    {
+        std::cout << "x: " << x << " y: " << y << std::endl;
+        mousePos = Point<int>(x, y);
+        return true;
+    }
+
+    void paint(Graphics& g) override
+    {
+        g.fillAll(Colours::red);
+    }
+
+    void renderNVG(NVGWrapper* nvgWrapper) override
+    {
+        auto nvg = nvgWrapper->nvg;
+        nvgBeginPath(nvg);
+        nvgCircle(nvg, mousePos.x, mousePos.y, 50);
+        nvgFillColor(nvg, nvgRGBf(.5, .2, .8));
+        nvgFill(nvg);
+    }
+
+    Point<int> mousePos;
+
+};
+
 class EditorNodeCanvas : public NVGComponent, public LassoSource<EditorNode*>, public ChangeListener
 {
 public:
@@ -40,6 +74,15 @@ public:
         isPressed = false;
         setMouseCursor(MouseCursor::NormalCursor);
         lasso.endLasso();
+    }
+
+    void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
+    {
+        auto newCanvasScale = canvasScale + (wheel.deltaY * 0.1);
+        canvasScale = jmax(0.21875, jmin(2.96094, newCanvasScale));
+        //std::cout << "canvas scale: " << canvasScale << std::endl;
+        mousePos = e.getEventRelativeTo(getParentComponent()).getPosition();
+        //delta = getLocalBounds().getPosition() + getLocalPoint(nullptr, e.getScreenPosition()) * canvasScale;
     }
 
     void findLassoItemsInArea (Array<EditorNode*>& itemsFound,
@@ -77,17 +120,27 @@ public:
         return selectedComponents;
     }
 
-    void renderNVG(NVGcontext* nvg) override
+    void renderNVG(NVGWrapper* nvgWrapper) override
     {
+        auto nvg = nvgWrapper->nvg;
         // instead of locking (which would never work anyway) we make Juce update the position of the canvas
         // from the openGL callback. This way it will be the same position during the entire opengl render call
+        // this may not be the best idea, but it works for now.
         TRACE_COMPONENT();
-        setTopLeftPosition(delta);
-        //return;
+        setTopLeftPosition(delta - mousePos);
+
         auto b = Rectangle<int>(0, 0, canvasSize, canvasSize);
 
         // apply translation to the canvas nvg objects
-        nvgTranslate(nvg, delta.x, delta.y);
+        nvgSave(nvg);
+        //auto mousePos = getParentComponent()->getLocalPoint(nullptr, nvgWrapper->mousePosScreen);
+        //std::cout << "mouse pos:" << mousePos.toString() << std::endl;
+        auto scaledMousePos = mousePos;
+        nvgTranslate(nvg, scaledMousePos.x, scaledMousePos.y);
+
+        nvgScale(nvg, canvasScale, canvasScale);
+        nvgTranslate(nvg, delta.x - scaledMousePos.x, delta.y - scaledMousePos.y);
+
 
         nvgBeginPath(nvg);
         auto bgColour = nvgRGBf(.15, .15, .15);
@@ -117,11 +170,14 @@ public:
 
         nvgLineStyle(nvg, NVG_LINE_SOLID);
 
-
         // remove the translation for now
         // we will probably keep this translation for the whole canvas
         // including for zooming
-        nvgTranslate(nvg, -delta.x, -delta.y);
+    }
+
+    void resetNVG(NVGcontext* nvg) override
+    {
+        nvgRestore(nvg);
     }
 
     void addConnection(EditorConnection* newConnection)
@@ -158,6 +214,9 @@ private:
     Point<int> currentPos;
     Point<int> mouseDownPos;
     Point<int> delta;
+    float canvasScaleRaw = 1.0f;
+    float canvasScale = 1.0f;
+    Point<int> mousePos;
 
     EditorNode* singleSelected = nullptr;
 
@@ -165,5 +224,7 @@ private:
 
     static constexpr int canvasSize = 200000;
     static constexpr int halfSize = canvasSize / 2;
+
+    TestComp testComp;
 };
 

@@ -21,9 +21,10 @@ public:
         addAndMakeVisible(topPanel.get());
     }
 
-    void renderNVG(NVGcontext* nvg) override
+    void renderNVG(NVGWrapper* nvgWrapper) override
     {
         return;
+        auto nvg = nvgWrapper->nvg;
         auto b = getBounds();
         nvgBeginPath(nvg);
         nvgFillColor(nvg, nvgRGBAf(1, 1, 0, 1));

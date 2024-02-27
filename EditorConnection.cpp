@@ -4,6 +4,7 @@
 #include "EditorConnection.h"
 #include "EditorNode.h"
 #include "EditorNodeIolet.h"
+#include "EditorNodeCanvas.h"
 
 EditorConnection::EditorConnection(EditorNodeIolet *node) :  node(node)
 {
@@ -12,18 +13,21 @@ EditorConnection::EditorConnection(EditorNodeIolet *node) :  node(node)
     //setAlwaysOnTop(true);
 }
 
-void EditorConnection::renderNVG(NVGcontext *nvg)
+void EditorConnection::renderNVG(NVGWrapper *nvgWrapper)
 {
     if (!node)
         return;
 
+    auto nvg = nvgWrapper->nvg;
+    auto cnv = findParentComponentOfClass<EditorNodeCanvas>();
+
     auto mouse = Desktop::getInstance().getMainMouseSource().getScreenPosition();
-    auto startPos = node->getScreenBounds().toFloat().getCentre() - getTopLevelComponent()->getScreenPosition().toFloat();
+    auto startPos = cnv->getLocalPoint(nullptr, node->getScreenBounds().toFloat().getCentre());// - getTopLevelComponent()->getScreenPosition().toFloat();
     Point<float> endPos;
     if (endNode)
-        endPos = endNode->getScreenBounds().toFloat().getCentre() - getTopLevelComponent()->getScreenPosition().toFloat();
+        endPos = cnv->getLocalPoint(nullptr, endNode->getScreenBounds().toFloat().getCentre());// - getTopLevelComponent()->getScreenPosition().toFloat();
     else
-        endPos = mouse - getTopLevelComponent()->getScreenPosition().toFloat();
+        endPos = cnv->getLocalPoint(nullptr, mouse);
 
     if (isStraight) {
         // outer line

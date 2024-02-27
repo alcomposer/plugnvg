@@ -7,6 +7,13 @@
 #include <JuceHeader.h>
 #include "libraries/nanovg-dev/src/nanovg.h"
 
+struct NVGWrapper
+{
+    NVGcontext* nvg;
+    Point<int> mousePosScreen;
+    int interFont;
+};
+
 class NVGComponent : public Component
 {
 public:
@@ -14,9 +21,11 @@ public:
 
     NVGComponent(){}
 
-    virtual void renderNVG(NVGcontext* nvg) = 0;
+    virtual void renderNVG(NVGWrapper* nvg) = 0;
 
-    void render(NVGcontext* nvg)
+    virtual void resetNVG(NVGcontext* nvg){};
+
+    void render(NVGWrapper* nvg)
     {
         //TRACE_COMPONENT();
         renderNVG(nvg);

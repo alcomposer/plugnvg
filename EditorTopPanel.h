@@ -14,8 +14,9 @@ public:
         setName("top panel");
     }
 
-    void renderNVG(NVGcontext* nvg) override
+    void renderNVG(NVGWrapper* nvgWrapper) override
     {
+        auto nvg = nvgWrapper->nvg;
         auto b = getBounds();
         nvgBeginPath(nvg);
         nvgFillColor(nvg, nvgRGBAf(0, 0, 1, 1));

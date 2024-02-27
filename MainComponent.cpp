@@ -30,7 +30,7 @@ MainComponent::MainComponent()
 
 
     glContext.setOpenGLVersionRequired(OpenGLContext::OpenGLVersion::openGL3_2);
-    glContext.setComponentPaintingEnabled(false);
+    glContext.setComponentPaintingEnabled(true);
     /*
     glContext.setMultisamplingEnabled(true);
     auto form = OpenGLPixelFormat(8,8,16,8);
@@ -67,9 +67,16 @@ void MainComponent::timerCallback()
 void MainComponent::newOpenGLContextCreated()
 {
     nvg = nvgCreateGLES3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
-
     if (!nvg)
         std::cout << "could not init nvg" << std::endl;
+
+    nvgWrapper.nvg = nvg;
+    nvgWrapper.mousePosScreen = Desktop::getInstance().getMousePosition();
+
+    nvgWrapper.interFont = nvgCreateFont(nvg, "sans", "../../Data/InterSemiBold.ttf");
+    if (nvgWrapper.interFont == -1)
+        std::cout << "could not init font" << std::endl;
+
 }
 
 void MainComponent::openGLContextClosing()
@@ -95,21 +102,30 @@ void MainComponent::processRender(Component* c)
     if (c == nullptr || !c->isVisible())
         return;
 
-    if (auto* nvgComp = dynamic_cast<NVGComponent*>(c)) {
+    NVGComponent* nvgComp = nullptr;
+
+    if (nvgComp = dynamic_cast<NVGComponent*>(c)) {
+        nvgComp->render(&nvgWrapper);
+        // render everything for now
+        /*
         auto type = nvgComp->getType();
         if ((type == NVGComponent::WidgetType::Node) || (type == NVGComponent::WidgetType::Iolet)) {
             if (nvgComp->getScreenBounds().intersects(editor->getScreenBounds())) {
-                nvgComp->render(nvg);
+                nvgComp->render(&nvgWrapper);
             }
         } else {
-            nvgComp->render(nvg);
+            nvgComp->render(&nvgWrapper);
         }
+         */
     }
 
     if (c->isVisible() /*&& (c->getNumChildComponents() > 0)*/ ) {
         for (auto& child: c->getChildren())
             processRender(child);
     }
+
+    if (nvgComp)
+        nvgComp->resetNVG(nvg);
 }
 
 void MainComponent::processRenderStack(Component* root)
@@ -129,7 +145,7 @@ void MainComponent::processRenderStack(Component* root)
             continue;
 
         if (auto nvcComp = dynamic_cast<NVGComponent *>(currentComponent)) {
-            nvcComp->render(nvg);
+            nvcComp->render(&nvgWrapper);
         }
 
         for (auto& child : currentComponent->getChildren())
@@ -169,7 +185,7 @@ void MainComponent::processRenderVector(Component* root)
     // Now, render the collected NVGComponents
     for (auto it = nvgComponents.rbegin(); it != nvgComponents.rend(); ++it) {
        auto& node = *it;
-       node->render(nvg);
+       node->render(&nvgWrapper);
     }
 }
 

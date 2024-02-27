@@ -22,12 +22,15 @@ EditorNodeCanvas::EditorNodeCanvas()
     //lock = findParentComponentOfClass<MainComponent>()->lock;
     //std::cout << "lock: " << lock << std::endl;
 
+    // test for component that is drawn by juce paint
+    //addAndMakeVisible(&testComp);
+
 #if (TEST_1000 == 1)
     Random random;
     Range range = Range<int>(100000, 101000);
 
-    for (int i = 0; i < 60; i++) {
-        for (int j = 0; j < 60; j++) {
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 50; j++) {
             //auto pos = Point<int>(random.nextInt(range), random.nextInt(range));
             auto pos = Point<int>((i * 110) + 100000, (j * 40) + 100000);
             auto node = new EditorNode(pos);
@@ -44,7 +47,7 @@ void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {
     ScopedTryLock lock(findParentComponentOfClass<MainComponent>()->renderLock);
     if (e.mods.isMiddleButtonDown()) {
         setMouseCursor(MouseCursor::DraggingHandCursor);
-        delta = currentPos + e.getOffsetFromDragStart();
+        delta = currentPos + (e.getOffsetFromDragStart() / canvasScale);
     } else if (e.mods.isLeftButtonDown()) {
         lasso.dragLasso(e);
     }

@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <JuceHeader.h>
 #include "NVGComponent.h"
 
 
@@ -16,7 +17,7 @@ public:
 
     EditorConnection(EditorNodeIolet* node);
 
-    void renderNVG(NVGcontext* nvg) override;
+    void renderNVG(NVGWrapper* nvg) override;
 
     Component* endNode = nullptr;
 

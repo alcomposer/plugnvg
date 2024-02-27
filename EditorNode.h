@@ -7,14 +7,17 @@
 #include "EditorNodeIolet.h"
 #include "libraries/melatonin_perfetto/melatonin_perfetto/melatonin_perfetto.h"
 
-class EditorNode : public NVGComponent
+//#define USE_JUCE_TEXT_RENDER
+
+class EditorNode : public NVGComponent, public Timer
 {
 public:
     EditorNode(Point<int> pos) : pos(pos)
     {
         //setInterceptsMouseClicks(true, true);
         static int nodeNumber = 0;
-        auto name = String("node: " + String(nodeNumber++));
+        thisNodeNumber = nodeNumber++;
+        auto name = String("node: " + String(thisNodeNumber));
         setName(name);
         setSize(100 + (border * 2), 30 + (border * 2));
         setTopLeftPosition(pos);
@@ -43,16 +46,33 @@ public:
             outletPos += 15;
         }
 
-        textTex = Image(Image::PixelFormat::ARGB, 100, 30, true);
-        auto g = Graphics(textTex);
-        g.setFont(juce::Font(18.0f));
-        g.setColour(Colour(255 * .9f, 255 * .9f, 255 * .9f));
-        g.drawRoundedRectangle(1.f, 1.f, 98.f, 28.f, 5.0f, 2.0f);
-        g.drawText(name, Rectangle<int>(5,0,95,30), Justification::centredLeft);
-        //convertToLinear(textTex, 2.2f);
+        updateText();
+        //startTimerHz(1);
     }
 
     ~EditorNode(){};
+
+    void timerCallback() override
+    {
+        updateText();
+    }
+
+    void updateText(String text = String())
+    {
+#ifdef USE_JUCE_TEXT_RENDER
+        static int nodeNumber = 0;
+        auto name = String("node: " + String(nodeNumber++));
+
+        textTex = Image(Image::PixelFormat::ARGB, 200, 60, true);
+        auto g = Graphics(textTex);
+        g.setFont(juce::Font(36.0f));
+        g.setColour(Colour(255 * .9f, 255 * .9f, 255 * .9f));
+        g.drawRoundedRectangle(1.f, 1.f, 198.f, 58.f, 10.0f, 8.0f);
+        g.drawText(name, Rectangle<int>(10, 0, 195, 60), Justification::centredLeft);
+
+        textNeedsUpdate = true;
+#endif
+    }
 
     WidgetType getType() override
     {
@@ -97,9 +117,12 @@ public:
 
     void mouseDrag(MouseEvent const& e) override;
 
-    void renderNVG(NVGcontext* nvg) override
+    void renderNVG(NVGWrapper* nvgWrapper) override
     {
-        auto bitmapImage = Image::BitmapData(textTex, 0, 0, 100, 30, Image::BitmapData::readOnly);
+        auto nvg = nvgWrapper->nvg;
+
+#ifdef USE_JUCE_TEXT_RENDER
+        auto bitmapImage = Image::BitmapData(textTex, 0, 0, 200, 60, Image::BitmapData::readOnly);
         if (nvgImage == -1) {
 /*
             uint8 * px = data;
@@ -113,18 +136,18 @@ public:
                 }
             }
 */
-            nvgImage = nvgCreateImageRGBA(nvg, 100, 30, 0, bitmapImage.data);
-            std::cout << "image hash: " << nvgImage << std::endl;
+            nvgImage = nvgCreateImageRGBA(nvg, 200, 60, 2, bitmapImage.data);
         } else if (textNeedsUpdate){
             nvgUpdateImage(nvg, nvgImage, bitmapImage.data);
+            textNeedsUpdate = false;
         }
 
-        auto parentLeft = getParentComponent()->getBounds().getTopLeft();
+#endif
+
         //auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
-        auto b = Rectangle<int>(pos.x + parentLeft.x, pos.y + parentLeft.y, getWidth(), getHeight()).reduced(border);
+        auto b = Rectangle<int>(pos.x, pos.y, getWidth(), getHeight()).reduced(border);
         //auto b = Rectangle<int>(pos.x, pos.y, getWidth(), getHeight()).reduced(border);
         setTopLeftPosition(pos);
-        //nvgTranslate(nvg, parentLeft.x, parentLeft.y);
         nvgBeginPath(nvg);
         auto cSelect = nvgRGBf(.3, .3, .3);
         auto cDefault = nvgRGBf(.2, .2, .2);
@@ -134,10 +157,11 @@ public:
         //    isSelected = static_cast<bool>(*selected);
 
         auto colour = cDefault;
-        auto selectedColour = nvgRGBf(.3f, .3f, 1.f);
-
+        auto selectedColour = nvgRGB(66, 162, 200);
 
         nvgRoundedRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight(), 5);
+
+#ifdef USE_JUCE_TEXT_RENDER
         if (isSelected) {
             nvgStrokeColor(nvg, selectedColour);
             nvgStrokeWidth(nvg, 8.0f);
@@ -149,11 +173,19 @@ public:
         nvgFill(nvg);
         nvgFillPaint(nvg, imgPaint);
         nvgFill(nvg);
-        //nvgStrokeColor(nvg, nvgRGBf(.9, .9, .9));
-        //nvgStrokeWidth(nvg, 1.f);
-        //nvgStroke(nvg);
-        //nvgClosePath(nvg);
-        //nvgTranslate(nvg, -parentLeft.x, parentLeft.y);
+#else
+        nvgFillColor(nvg, cDefault);
+        nvgFill(nvg);
+        nvgStrokeWidth(nvg, 1.f);
+        nvgStrokeColor(nvg, isSelected ? selectedColour : nvgRGBf(.9, .9, .9));
+        nvgStroke(nvg);
+
+        nvgFillColor(nvg, nvgRGBf(.9, .9, .9));
+        nvgFontSize(nvg, 16.0f);
+        nvgFontFace(nvg, "sans");
+        nvgTextAlign(nvg, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
+        nvgText(nvg, b.getX() + 5, b.toFloat().getCentreY(), String("node~ " + String(thisNodeNumber)).toRawUTF8(), nullptr);
+#endif
     }
 
     void applyGammaCorrection(juce::Image& image, float gamma) {
@@ -189,6 +221,7 @@ void convertToLinear(juce::Image& image, float gamma) {
 
 private:
     Image textTex;
+    int thisNodeNumber;
     bool textNeedsUpdate = false;
     unsigned char data[100*30*4];
     int nvgImage = -1;

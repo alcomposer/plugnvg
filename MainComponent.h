@@ -46,6 +46,7 @@ public:
 private:
     OpenGLContext glContext;
     NVGcontext* nvg;
+    NVGWrapper nvgWrapper;
 
     std::unique_ptr<Editor> editor;
 

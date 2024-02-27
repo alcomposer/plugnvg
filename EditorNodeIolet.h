@@ -30,11 +30,15 @@ public:
     {
         isActive = false;
     }
-    void renderNVG(NVGcontext * nvg) override
+    void renderNVG(NVGWrapper * nvgWrapper) override
     {
+        auto nvg = nvgWrapper->nvg;
+
+        auto ioletColor = nvgRGB(66, 162, 200);
+
         auto parentPos = getParentComponent()->getPosition();
-        auto canvasPos = getParentComponent()->getParentComponent()->getPosition();
-        auto finalPos = parentPos + canvasPos + pos;
+        //auto canvasPos = getParentComponent()->getParentComponent()->getPosition();
+        auto finalPos = parentPos + pos;
         nvgSave(nvg);
         nvgBeginPath(nvg);
         nvgCircle(nvg, finalPos.x, finalPos.y, isActive ? 8 : 5);
@@ -48,13 +52,16 @@ public:
             nvgStrokeColor(nvg, nvgRGBA(255, 255, 255, 255));
             nvgStrokeWidth(nvg, 2.0f);
             nvgStroke(nvg);
-            nvgFillColor(nvg, nvgRGBA(255, 0, 0, 255)); // Red color
+            nvgFillColor(nvg, ioletColor); // Red color
             nvgFill(nvg);
 
         } else {
 
-            nvgFillColor(nvg, nvgRGBA(255, 0, 0, 255)); // Red color
+            nvgFillColor(nvg, ioletColor); // Red color
             nvgFill(nvg);
+            nvgStrokeColor(nvg, nvgRGBA(255, 255, 255, 255));
+            nvgStrokeWidth(nvg, 2.0f);
+            nvgStroke(nvg);
         }
         nvgRestore(nvg);
     }
