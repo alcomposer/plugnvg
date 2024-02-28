@@ -25,7 +25,7 @@ EditorNodeCanvas::EditorNodeCanvas()
     // test for component that is drawn by juce paint
     //addAndMakeVisible(&testComp);
 
-//#if (TEST_1000 == 1)
+#if (TEST_1000 == 1)
     Random random;
     Range range = Range<int>(100000, 101000);
 
@@ -48,7 +48,7 @@ EditorNodeCanvas::EditorNodeCanvas()
 
         }
     }
-//#endif
+#endif
 }
 
 void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {
