@@ -31,14 +31,15 @@ MainComponent::MainComponent()
 
     glContext.setOpenGLVersionRequired(OpenGLContext::OpenGLVersion::openGL3_2);
     glContext.setComponentPaintingEnabled(true);
+
+    glContext.setMultisamplingEnabled(false);
     /*
-    glContext.setMultisamplingEnabled(true);
     auto form = OpenGLPixelFormat(8,8,16,8);
     form.multisamplingLevel = 2;
     glContext.setPixelFormat(form);
     */
     glContext.setContinuousRepainting(false);
-    glContext.setSwapInterval(1);
+    //glContext.setSwapInterval(0);
 
     //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
@@ -73,7 +74,7 @@ void MainComponent::newOpenGLContextCreated()
     nvgWrapper.nvg = nvg;
     nvgWrapper.mousePosScreen = Desktop::getInstance().getMousePosition();
 
-    nvgWrapper.interFont = nvgCreateFont(nvg, "sans", "../../Data/InterSemiBold.ttf");
+    nvgWrapper.interFont = nvgCreateFont(nvg, "sans", "../../../Data/InterSemiBold.ttf");
     if (nvgWrapper.interFont == -1)
         std::cout << "could not init font" << std::endl;
 
@@ -98,14 +99,15 @@ void MainComponent::renderOpenGL()
 
 void MainComponent::processRender(Component* c)
 {
-    //TRACE_COMPONENT();
+    TRACE_COMPONENT();
     if (c == nullptr || !c->isVisible())
         return;
 
     NVGComponent* nvgComp = nullptr;
 
     if (nvgComp = dynamic_cast<NVGComponent*>(c)) {
-        nvgComp->render(&nvgWrapper);
+        //if (nvgComp->getType() != NVGComponent::WidgetType::Iolet)
+            nvgComp->render(&nvgWrapper);
         // render everything for now
         /*
         auto type = nvgComp->getType();
@@ -119,10 +121,11 @@ void MainComponent::processRender(Component* c)
          */
     }
 
-    if (c->isVisible() /*&& (c->getNumChildComponents() > 0)*/ ) {
-        for (auto& child: c->getChildren())
+    //if (c->getNumChildComponents() > 0) {
+        for (auto& child: c->getChildren()) {
             processRender(child);
-    }
+        }
+    //}
 
     if (nvgComp)
         nvgComp->resetNVG(nvg);

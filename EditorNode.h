@@ -23,19 +23,22 @@ public:
         setTopLeftPosition(pos);
 
         // setup iolets
-        auto inletPos = 10;
-        for (int i = 0; i < 3; i++) {
+        auto inletNum = 2;
+        auto inletPos = 20;
+        auto inletPadding = (getBounds().getWidth() - (2 * border) + 20) / (inletNum);
+        for (int i = 0; i < inletNum; i++) {
             auto inlet = new EditorNodeIolet(EditorNodeIolet::Iolet::Inlet);
             inlets.add(inlet);
             addAndMakeVisible(inlet);
             inlet->setCentrePosition(inletPos + border, border);
             inlet->pos.x = inletPos + border;
             inlet->pos.y = border;
-            inletPos += 15;
+            inletPos += inletPadding;
         }
 
         // setup outlets
-        auto outletPos = 10;
+        auto outletPos = 20;
+        auto outletPadding = (getBounds().getWidth() - (2 * 20) + (2 * border)) / 3;
         for (int i = 0; i < 3; i++) {
             auto outlet = new EditorNodeIolet(EditorNodeIolet::Iolet::Outlet);
             outlets.add(outlet);
@@ -43,7 +46,7 @@ public:
             outlet->setCentrePosition(outletPos + border, getHeight() - border);
             outlet->pos.x = outletPos + border;
             outlet->pos.y = getHeight() - border;
-            outletPos += 15;
+            outletPos += outletPadding;
         }
 
         updateText();
@@ -55,6 +58,14 @@ public:
     void timerCallback() override
     {
         updateText();
+    }
+
+    void paintOverChildren(Graphics& g) override
+    {
+        return;
+
+        g.setColour(Colours::red);
+        g.drawRect(getLocalBounds(), 1.0f);
     }
 
     void updateText(String text = String())
@@ -145,10 +156,10 @@ public:
 #endif
 
         //auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
-        auto b = Rectangle<int>(pos.x, pos.y, getWidth(), getHeight()).reduced(border);
+        auto b = Rectangle<float>(pos.x, pos.y, getWidth(), getHeight()).reduced(border + .5f);
         //auto b = Rectangle<int>(pos.x, pos.y, getWidth(), getHeight()).reduced(border);
         setTopLeftPosition(pos);
-        nvgBeginPath(nvg);
+        //nvgBeginPath(nvg);
         auto cSelect = nvgRGBf(.3, .3, .3);
         auto cDefault = nvgRGBf(.2, .2, .2);
 
@@ -159,7 +170,22 @@ public:
         auto colour = cDefault;
         auto selectedColour = nvgRGB(66, 162, 200);
 
-        nvgRoundedRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight(), 5);
+        auto isActivity = false;
+
+        auto cTransparent = nvgRGBAf(0, 0, 0, 0);
+
+        // glow
+        if (isActivity) {
+            nvgBeginPath(nvg);
+            auto ds = b.expanded(4);
+            //nvgRoundedRect(nvg, ds.getX(), ds.getY(), ds.getWidth(), ds.getHeight(), 8);
+            if (glowDirty) {
+                glow = nvgBoxGradient(nvg, ds.getX(), ds.getY(), ds.getWidth(), ds.getHeight(), 10, 20, cTransparent, cTransparent);
+                glowDirty = false;
+            }
+            nvgFillPaint(nvg, glow);
+            nvgFill(nvg);
+        }
 
 #ifdef USE_JUCE_TEXT_RENDER
         if (isSelected) {
@@ -174,6 +200,29 @@ public:
         nvgFillPaint(nvg, imgPaint);
         nvgFill(nvg);
 #else
+        if (isSelected) {
+            nvgFillColor(nvg, selectedColour);
+            // top left
+            nvgBeginPath(nvg);
+            nvgRoundedRect(nvg, b.getX() - 4, b.getY() - 4, 14, 14, 5);
+            nvgFill(nvg);
+            // bottom right
+            nvgBeginPath(nvg);
+            nvgRoundedRect(nvg, b.getX() + b.getWidth() - 10, b.getY() + b.getHeight() - 10, 14, 14, 5);
+            nvgFill(nvg);
+            // top right
+            nvgBeginPath(nvg);
+            nvgRoundedRect(nvg, b.getX() + b.getWidth() - 10, b.getY() - 4, 14, 14, 5);
+            nvgFill(nvg);
+            // bottom left
+            nvgBeginPath(nvg);
+            nvgRoundedRect(nvg, b.getX() - 4, b.getY() + b.getHeight() - 10, 14, 14, 5);
+            nvgFill(nvg);
+
+        }
+
+        nvgBeginPath(nvg);
+        nvgRoundedRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight(), 5);
         nvgFillColor(nvg, cDefault);
         nvgFill(nvg);
         nvgStrokeWidth(nvg, 1.f);
@@ -184,7 +233,47 @@ public:
         nvgFontSize(nvg, 16.0f);
         nvgFontFace(nvg, "sans");
         nvgTextAlign(nvg, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
-        nvgText(nvg, b.getX() + 5, b.toFloat().getCentreY(), String("node~ " + String(thisNodeNumber)).toRawUTF8(), nullptr);
+        nvgText(nvg, b.toFloat().getX() + 5, b.toFloat().getCentreY(), String("node~ " + String(thisNodeNumber)).toRawUTF8(), nullptr);
+
+        // draw all iolets at once
+        for (auto& inlet : inlets) {
+            if (inlet->isActive) {
+                nvgBeginPath(nvg);
+                nvgFillColor(nvg, selectedColour);
+                nvgCircle(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 7);
+                nvgFill(nvg);
+            } else {
+                nvgBeginPath(nvg);
+                nvgFillColor(nvg, nvgRGBf(.9, .9, .9));
+                nvgArc(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CW);
+                nvgFill(nvg);
+
+                nvgBeginPath(nvg);
+                nvgFillColor(nvg, selectedColour);
+                nvgArc(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 5, 0, NVG_PI, NVG_CW);
+                nvgFill(nvg);
+            }
+        }
+
+        // draw all outlets at once
+        for (auto& outlet : outlets) {
+            if (outlet->isActive) {
+                nvgBeginPath(nvg);
+                nvgFillColor(nvg, selectedColour);
+                nvgCircle(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 7);
+                nvgFill(nvg);
+            } else {
+                nvgBeginPath(nvg);
+                nvgFillColor(nvg, nvgRGBf(.9, .9, .9));
+                nvgArc(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CCW);
+                nvgFill(nvg);
+
+                nvgBeginPath(nvg);
+                nvgFillColor(nvg, selectedColour);
+                nvgArc(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 5, 0, NVG_PI, NVG_CCW);
+                nvgFill(nvg);
+            }
+        }
 #endif
     }
 
@@ -219,6 +308,9 @@ void convertToLinear(juce::Image& image, float gamma) {
 
     Point<int> mouseDownPos;
 
+    OwnedArray<EditorNodeIolet> inlets;
+    OwnedArray<EditorNodeIolet> outlets;
+
 private:
     Image textTex;
     int thisNodeNumber;
@@ -227,9 +319,10 @@ private:
     int nvgImage = -1;
     Point<int> pos;
     bool isHover = false;
-    int border = 8;
+    float border = 8;
+
+    NVGpaint glow;
+    bool glowDirty = true;
 
     Point<int> dragDelta;
-    OwnedArray<EditorNodeIolet> inlets;
-    OwnedArray<EditorNodeIolet> outlets;
 };

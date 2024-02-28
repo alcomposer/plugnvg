@@ -79,7 +79,7 @@ public:
     void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
     {
         auto newCanvasScale = canvasScale + (wheel.deltaY * 0.1);
-        canvasScale = jmax(0.21875, jmin(2.96094, newCanvasScale));
+        canvasScale = jmax(0.21875, jmin(10.0, newCanvasScale));
         //std::cout << "canvas scale: " << canvasScale << std::endl;
         mousePos = e.getEventRelativeTo(getParentComponent()).getPosition();
         //delta = getLocalBounds().getPosition() + getLocalPoint(nullptr, e.getScreenPosition()) * canvasScale;
@@ -126,7 +126,7 @@ public:
         // instead of locking (which would never work anyway) we make Juce update the position of the canvas
         // from the openGL callback. This way it will be the same position during the entire opengl render call
         // this may not be the best idea, but it works for now.
-        TRACE_COMPONENT();
+        //TRACE_COMPONENT();
         setTopLeftPosition(delta - mousePos);
 
         auto b = Rectangle<int>(0, 0, canvasSize, canvasSize);
@@ -137,15 +137,17 @@ public:
         //std::cout << "mouse pos:" << mousePos.toString() << std::endl;
         auto scaledMousePos = mousePos;
         nvgTranslate(nvg, scaledMousePos.x, scaledMousePos.y);
-
         nvgScale(nvg, canvasScale, canvasScale);
         nvgTranslate(nvg, delta.x - scaledMousePos.x, delta.y - scaledMousePos.y);
 
+        auto bgColour = nvgRGBf(.15, .15, .15);
 
         nvgBeginPath(nvg);
-        auto bgColour = nvgRGBf(.15, .15, .15);
-        auto dots = nvgDotPattern(nvg, nvgRGBf(.4, .4, .4), bgColour);
-        auto grad = nvgRadialGradient(nvg, 100000, 100000, 10, 100, nvgRGBf(1.0, 1.0, 1.0), bgColour);
+        if (resetDots == true) {
+            dots = nvgDotPattern(nvg, nvgRGBf(.4, .4, .4), bgColour);
+            resetDots = false;
+        }
+        //auto grad = nvgRadialGradient(nvg, 100000, 100000, 10, 100, nvgRGBf(1.0, 1.0, 1.0), bgColour);
         nvgFillPaint(nvg, dots);
         nvgRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight());
         nvgFill(nvg);
@@ -169,10 +171,6 @@ public:
         nvgStroke(nvg);
 
         nvgLineStyle(nvg, NVG_LINE_SOLID);
-
-        // remove the translation for now
-        // we will probably keep this translation for the whole canvas
-        // including for zooming
     }
 
     void resetNVG(NVGcontext* nvg) override
@@ -226,5 +224,8 @@ private:
     static constexpr int halfSize = canvasSize / 2;
 
     TestComp testComp;
+
+    NVGpaint dots;
+    bool resetDots = true;
 };
 

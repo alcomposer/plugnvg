@@ -32,6 +32,8 @@ public:
     }
     void renderNVG(NVGWrapper * nvgWrapper) override
     {
+        return;
+
         auto nvg = nvgWrapper->nvg;
 
         auto ioletColor = nvgRGB(66, 162, 200);

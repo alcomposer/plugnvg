@@ -17,6 +17,8 @@ public:
 
     EditorConnection(EditorNodeIolet* node);
 
+    EditorConnection(EditorNodeIolet* startNode, EditorNodeIolet* endNode);
+
     void renderNVG(NVGWrapper* nvg) override;
 
     Component* endNode = nullptr;

@@ -25,9 +25,11 @@ EditorNodeCanvas::EditorNodeCanvas()
     // test for component that is drawn by juce paint
     //addAndMakeVisible(&testComp);
 
-#if (TEST_1000 == 1)
+//#if (TEST_1000 == 1)
     Random random;
     Range range = Range<int>(100000, 101000);
+
+    EditorNode* mainNode;
 
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 50; j++) {
@@ -37,9 +39,16 @@ EditorNodeCanvas::EditorNodeCanvas()
             //node->setCentrePosition(pos);
             nodes.add(node);
             addAndMakeVisible(node);
+
+            if (i == 0 && j == 0)
+                mainNode = node;
+            else {
+                addConnection(new EditorConnection(mainNode->outlets[0], node->inlets[0]));
+            }
+
         }
     }
-#endif
+//#endif
 }
 
 void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {

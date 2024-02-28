@@ -14,7 +14,7 @@ public:
     void resized()
     {
         b = getBounds();
-        std::cout << "bounds: " << b.toString() << std::endl;
+        //std::cout << "bounds: " << b.toString() << std::endl;
     }
 
     void renderNVG(NVGWrapper *nvgWrapper) override {
@@ -41,6 +41,8 @@ public:
         addAndMakeVisible(lassoDrawing);
         setAlwaysOnTop(true);
     };
+
+    void paint(Graphics& g) override {}
 
     void resized()
     {
