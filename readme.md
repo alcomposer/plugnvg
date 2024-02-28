@@ -1,5 +1,5 @@
 Test for using nanovg for drawing the plugdata interface.
-( nanovg fork from @rgb2hsv )
+( nanovg fork from @rgb2hsv https://github.com/rgb2hsv/nanovg)
 
 Only tested on Linux at this point
 
