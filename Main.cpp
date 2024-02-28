@@ -82,12 +82,12 @@ class MainWindow    : public juce::DocumentWindow
                               DocumentWindow::allButtons)
         {
             setOpaque(false);
-            auto useNativeTitlebar = false;
+            auto useNativeTitlebar = true;
             setUsingNativeTitleBar (useNativeTitlebar);
             //setResizable(true, false);
             //setResizeLimits(500, 500, 500, 500);
             //getPeer()->forceNotResizable();
-            setTitleBarHeight(0);
+            //setTitleBarHeight(0);
             setBackgroundColour(Colours::transparentBlack);
             //auto titlebarHeight = 37;
             //setTitleBarHeight(37);
