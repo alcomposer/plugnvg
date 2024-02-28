@@ -1,5 +1,16 @@
-![x11 window example](x11-window.png)
+Test for using nanovg for drawing the plugdata interface.
 
-A simple cleanroom JUCE app that creates a single window with a filled-stretched checkerboard pattern.
+Zooming does not work correctly yet
 
-Used for testing X11 resizing bugs
+* Middle mouse to drag around
+* Double click to add a node
+* Drag from iolet to another iolet to make a connection
+
+To build:
+```
+$ mkdir build && cd build
+$ cmake .. -DCMAKE_BUILD_TYPE=Release
+$ make 
+```
+
+App will be in: `plugnvg/build/plugnvg_artefacts/Release/`
