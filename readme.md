@@ -14,3 +14,5 @@ $ make
 ```
 
 App will be in: `plugnvg/build/plugnvg_artefacts/Release/`
+
+![plugnvg-example.png](plugnvg-example.png)
