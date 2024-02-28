@@ -1,5 +1,7 @@
 Test for using nanovg for drawing the plugdata interface.
 
+Only tested on Linux at this point
+
 Zooming does not work correctly yet
 
 * Middle mouse to drag around
