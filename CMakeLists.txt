@@ -8,7 +8,7 @@ include_directories("libraries/nanovg-dev")
 
 add_subdirectory("libraries/melatonin_perfetto")
 
-project(GUI_APP_EXAMPLE VERSION 0.0.1)
+project(PLUGNVG VERSION 0.0.1)
 
 add_compile_options(-fpermissive)
 
