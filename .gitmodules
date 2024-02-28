@@ -7,4 +7,4 @@
 	branch = main
 [submodule "libraries/nanovg-dev"]
 	path = libraries/nanovg-dev
-	url = https://github.com/rgb2hsv/nanovg.git
+	url = https://github.com/alcomposer/nanovg.git
