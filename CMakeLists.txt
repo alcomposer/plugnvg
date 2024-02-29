@@ -12,6 +12,14 @@ project(PLUGNVG VERSION 0.0.1)
 
 add_compile_options(-fpermissive)
 
+# Global compile options
+add_compile_options(
+        # Build with Multiple Processes on Visual Studio
+        $<$<CXX_COMPILER_ID:MSVC>:/MP>
+        # Set source and executable charsets to UTF-8. Required for building on CJK Windows.
+        $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
+)
+
 juce_add_gui_app(plugnvg
     # VERSION ...                       # Set this if the app version is different to the project version
     # ICON_BIG ...                      # ICON_* arguments specify a path to an image file to use as an icon
@@ -42,8 +50,8 @@ target_compile_definitions(plugnvg
         JUCE_USE_XSHM=1
         JUCE_USE_XRENDER=1
         PERFETTO=0
-        #JUCE_FORCE_DEBUG=1
-        #TEST_1000=1
+        JUCE_FORCE_DEBUG=1
+        TEST_1000=1
         )
 
 target_link_libraries(plugnvg

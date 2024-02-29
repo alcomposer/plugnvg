@@ -62,6 +62,10 @@ public:
             addAndMakeVisible(node);
             setSingleSelected(nullptr);
         } else if (e.mods.isLeftButtonDown()) {
+            for (auto* c : selectedComponents) {
+                c->isSelected = false;
+            }
+            selectedComponents.deselectAll();
             lasso.beginLasso(e.getEventRelativeTo(this), this);
             setSingleSelected(nullptr);
         }

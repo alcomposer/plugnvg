@@ -39,7 +39,7 @@ MainComponent::MainComponent()
     glContext.setPixelFormat(form);
     */
     glContext.setContinuousRepainting(false);
-    //glContext.setSwapInterval(0);
+    //glContext.setSwapInterval(1);
 
     //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
@@ -48,7 +48,7 @@ MainComponent::MainComponent()
     editor = std::make_unique<Editor>();
     addAndMakeVisible(editor.get());
 
-    setSize (1200, 600);
+    setBounds(juce::Rectangle<int>(0,0,1200, 600));
     startTimerHz(60);
 }
 
@@ -77,7 +77,6 @@ void MainComponent::newOpenGLContextCreated()
     nvgWrapper.interFont = nvgCreateFont(nvg, "sans", "../../../Data/InterSemiBold.ttf");
     if (nvgWrapper.interFont == -1)
         std::cout << "could not init font" << std::endl;
-
 }
 
 void MainComponent::openGLContextClosing()
@@ -87,7 +86,7 @@ void MainComponent::openGLContextClosing()
 
 void MainComponent::renderOpenGL()
 {
-    TRACE_COMPONENT();
+    //TRACE_COMPONENT();
     ScopedLock lock(renderLock);
     glViewport(0, 0, getWidth(), getHeight());
     OpenGLHelpers::clear(Colours::black);
