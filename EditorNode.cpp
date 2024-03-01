@@ -30,8 +30,11 @@ void EditorNode::mouseDrag(MouseEvent const &e) {
         auto cnv = findParentComponentOfClass<EditorNodeCanvas>();
         //if (cnv->selectedComponents.getNumSelected() >= 2) {
             for (auto &node: cnv->selectedComponents) {
-                if (node != this)
+                if (node != this) {
+                    node->mouseDownPos = mouseDownPos;
                     node->mouseDrag(e.getEventRelativeTo(getParentComponent()));
+
+                }
             }
         //}
     }
