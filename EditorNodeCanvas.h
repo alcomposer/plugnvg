@@ -101,7 +101,6 @@ public:
                 itemsFound.add(node);
             } else  {
                 node->isSelected = false;
-
             }
         }
     }
