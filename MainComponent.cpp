@@ -49,7 +49,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(editor.get());
 
     setBounds(juce::Rectangle<int>(0,0,1200, 600));
-    startTimerHz(30);
+    startTimerHz(60);
 }
 
 MainComponent::~MainComponent()

@@ -62,6 +62,7 @@ public:
 
     void paintOverChildren(Graphics& g) override
     {
+        return;
         g.setColour(Colours::red);
         g.drawRect(getLocalBounds(), 1.0f);
     }
@@ -229,10 +230,10 @@ public:
         nvgFillColor(nvg, cDefault);
         nvgFill(nvg);
         nvgStrokeWidth(nvg, 1.f);
-        nvgStrokeColor(nvg, isSelected ? selectedColour : nvgRGBf(.9, .9, .9));
+        nvgStrokeColor(nvg, isSelected ? selectedColour : nvgRGBf(.8, .8, .8));
         nvgStroke(nvg);
 
-        nvgFillColor(nvg, nvgRGBf(.9, .9, .9));
+        nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
         nvgFontSize(nvg, 16.0f);
         nvgFontFace(nvg, "sans");
         nvgTextAlign(nvg, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
@@ -247,7 +248,7 @@ public:
                 nvgFill(nvg);
             } else {
                 nvgBeginPath(nvg);
-                nvgFillColor(nvg, nvgRGBf(.9, .9, .9));
+                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
                 nvgArc(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CW);
                 nvgFill(nvg);
 
@@ -267,7 +268,7 @@ public:
                 nvgFill(nvg);
             } else {
                 nvgBeginPath(nvg);
-                nvgFillColor(nvg, nvgRGBf(.9, .9, .9));
+                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
                 nvgArc(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CCW);
                 nvgFill(nvg);
 

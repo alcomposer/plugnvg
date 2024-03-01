@@ -19,8 +19,8 @@ public:
 
     void renderNVG(NVGWrapper *nvgWrapper) override {
         auto nvg = nvgWrapper->nvg;
-        auto defaultColor = nvgRGBAf(.3f, .3f, 1.f, 0.2f);
-        auto outlineColour = nvgRGBf(.3f, .3f, 1.f);
+        auto defaultColor = nvgRGBA(66, 162, 200, 20);
+        auto outlineColour = nvgRGB(66, 162, 200);;
         nvgBeginPath(nvg);
         nvgFillColor(nvg, defaultColor);
         nvgRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight());
