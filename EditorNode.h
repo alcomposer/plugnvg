@@ -126,6 +126,11 @@ public:
 
     void mouseDrag(MouseEvent const& e) override;
 
+    Rectangle<int> getSelectableBounds()
+    {
+        return getBounds().reduced(border);
+    }
+
     void renderNVG(NVGWrapper* nvgWrapper) override
     {
         auto nvg = nvgWrapper->nvg;

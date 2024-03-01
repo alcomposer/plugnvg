@@ -93,11 +93,10 @@ public:
     void findLassoItemsInArea (Array<EditorNode*>& itemsFound,
                                        const Rectangle<int>& area) override
     {
-        //std::cout << "lasso bounds: " << area.toString() << std::endl;
+        auto lassoArea = area.withSize(jmax(area.getWidth(), 1), jmax(area.getHeight(), 1));
         for (auto* node : nodes) {
-            auto selB = node->getBounds();
-            //std::cout << "node bounds: " << selB.toString() << std::endl;
-            if (area.intersects(selB)) {
+            auto selB = node->getSelectableBounds();
+            if (lassoArea.intersects(selB)) {
                 node->isSelected = true;
                 itemsFound.add(node);
             } else  {
