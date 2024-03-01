@@ -38,7 +38,7 @@ void EditorNodeIolet::mouseUp(MouseEvent const& e)
     if (newConnection && newConnection->endNode == nullptr) {
         std::cout << "connection is not complete, delete cable" << std::endl;
         if (auto editor = findParentComponentOfClass<EditorNodeCanvas>()) {
-            editor->removeConnection();
+            editor->removeUnsuccessfulConnection();
             newConnection = nullptr;
         }
     }

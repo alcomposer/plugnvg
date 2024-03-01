@@ -62,8 +62,6 @@ public:
 
     void paintOverChildren(Graphics& g) override
     {
-        return;
-
         g.setColour(Colours::red);
         g.drawRect(getLocalBounds(), 1.0f);
     }

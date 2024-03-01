@@ -11,9 +11,7 @@ void EditorNode::mouseDown(MouseEvent const& e) {
         return;
     }
     auto cnv = findParentComponentOfClass<EditorNodeCanvas>();
-    if (cnv->selectedComponents.getNumSelected() == 0) {
-        cnv->setSingleSelected(this);
-    }
+    cnv->setSingleSelected(this);
     mouseDownPos = e.getScreenPosition();
 }
 
@@ -30,12 +28,12 @@ void EditorNode::mouseDrag(MouseEvent const &e) {
 
     if (e.originalComponent == this) {
         auto cnv = findParentComponentOfClass<EditorNodeCanvas>();
-        if (cnv->selectedComponents.getNumSelected() >= 2) {
+        //if (cnv->selectedComponents.getNumSelected() >= 2) {
             for (auto &node: cnv->selectedComponents) {
                 if (node != this)
-                    node->mouseDrag(e);
+                    node->mouseDrag(e.getEventRelativeTo(getParentComponent()));
             }
-        }
+        //}
     }
 
     //dragDelta =  e.getScreenPosition() - mouseDownPos;

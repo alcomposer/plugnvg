@@ -82,6 +82,7 @@ public:
 
     void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
     {
+        return;
         auto newCanvasScale = canvasScale + (wheel.deltaY * 0.1);
         canvasScale = jmax(0.21875, jmin(10.0, newCanvasScale));
         //std::cout << "canvas scale: " << canvasScale << std::endl;
@@ -188,24 +189,43 @@ public:
         addAndMakeVisible(newConnection);
     }
 
-    void removeConnection();
+    void removeUnsuccessfulConnection();
 
     void setSingleSelected(EditorNode* nodeToSelect)
     {
-        if (nodeToSelect != singleSelected) {
-            if (singleSelected)
-                singleSelected->isSelected = false;
+        if (nodeToSelect != nullptr) {
+            std::cout << "selecting node: " << nodeToSelect->getName() << std::endl;
+            if (selectedComponents.isSelected(nodeToSelect))
+                return;
 
-            singleSelected = nodeToSelect;
+            for (auto& c : selectedComponents)
+                c->isSelected = false;
 
-            if (singleSelected)
-                singleSelected->isSelected = true;
+            selectedComponents.selectOnly(nodeToSelect);
+            nodeToSelect->isSelected = true;
+        } else {
+            for (auto& c : selectedComponents)
+                c->isSelected = false;
+
+            selectedComponents.deselectAll();
         }
     }
 
     // TODO: this needs to be a safepointer!
     // Needs to be allocated before object and connection so they can deselect themselves in the destructor
     SelectedItemSet<EditorNode*> selectedComponents;
+
+    void setNodeDragOffset(Point<int> offset)
+    {
+        nodeDragOffset = offset;
+    }
+
+    void updateDragOffset()
+    {
+        nvgNodeDragOffset = nodeDragOffset;
+    }
+
+    Point<int> nvgNodeDragOffset;
 
 private:
 
@@ -220,7 +240,8 @@ private:
     float canvasScale = 1.0f;
     Point<int> mousePos;
 
-    EditorNode* singleSelected = nullptr;
+    Point<int> nodeDragOffset;
+
 
     NVGLasso lasso;
 

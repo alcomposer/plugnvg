@@ -39,7 +39,7 @@ MainComponent::MainComponent()
     glContext.setPixelFormat(form);
     */
     glContext.setContinuousRepainting(false);
-    //glContext.setSwapInterval(1);
+    //glContext.setSwapInterval(30);
 
     //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
@@ -49,7 +49,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(editor.get());
 
     setBounds(juce::Rectangle<int>(0,0,1200, 600));
-    startTimerHz(60);
+    startTimerHz(30);
 }
 
 MainComponent::~MainComponent()

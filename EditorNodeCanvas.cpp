@@ -54,6 +54,9 @@ EditorNodeCanvas::EditorNodeCanvas()
 void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {
     //TRACE_COMPONENT();
     ScopedTryLock lock(findParentComponentOfClass<MainComponent>()->renderLock);
+    if (!lock.isLocked())
+        return;
+
     if (e.mods.isMiddleButtonDown()) {
         setMouseCursor(MouseCursor::DraggingHandCursor);
         delta = currentPos + (e.getOffsetFromDragStart() / canvasScale);
@@ -62,15 +65,17 @@ void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {
     }
 }
 
-void EditorNodeCanvas::removeConnection()
+void EditorNodeCanvas::removeUnsuccessfulConnection()
 {
     while(true) {
         //std::cout << "trying to aquire lock" << std::endl;
         ScopedTryLock lock(findParentComponentOfClass<MainComponent>()->renderLock);
         if (lock.isLocked()){
             std::cout << "cons size: " << cons.size() << std::endl;
-            cons.removeLast();
-            return;
+            if (!cons.getLast()->endNode) {
+                cons.removeLast();
+                return;
+            }
         }
         std::this_thread::sleep_for(std::chrono::nanoseconds(1));
     }
