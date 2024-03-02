@@ -53,9 +53,9 @@ EditorNodeCanvas::EditorNodeCanvas()
 
 void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {
     //TRACE_COMPONENT();
-    ScopedTryLock lock(findParentComponentOfClass<MainComponent>()->renderLock);
-    if (!lock.isLocked())
-        return;
+    //ScopedTryLock lock(findParentComponentOfClass<MainComponent>()->renderLock);
+    //if (!lock.isLocked())
+    //    return;
 
     if (e.mods.isMiddleButtonDown()) {
         setMouseCursor(MouseCursor::DraggingHandCursor);
