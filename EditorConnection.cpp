@@ -57,31 +57,39 @@ void EditorConnection::renderNVG(NVGWrapper *nvgWrapper)
         nvgLineStyle(nvg, NVG_LINE_SOLID);
 
     } else {
-        // outer line
+        // calculate bezier path
+        auto start = endPos;
+        auto end = startPos;
 
-        const auto cPoint1 = Point<float>(startPos.x, ((endPos.y - startPos.y) * 0.75f) + startPos.y);
-        const auto cPoint2 = Point<float>(endPos.x, ((endPos.y - startPos.y) * 0.25f) + startPos.y);
-
-        auto cp1 = cPoint1;
-        auto cp2 = cPoint2;
-        auto start = startPos;
-        auto end = endPos;
-
-        if (node->ioletType == EditorNodeIolet::Outlet || !endNode) {
-            start = endPos;
-            end = startPos;
-            cp1 = cPoint2;
-            cp2 = cPoint1;
+        if ((node->ioletType == EditorNodeIolet::Outlet && !endNode) || (node->ioletType == EditorNodeIolet::Outlet)) {
+            start = startPos;
+            end = endPos;
         }
+
+        float const width = std::max(start.x, end.x) - std::min(start.x, end.x);
+        float const height = std::max(start.y, end.y) - std::min(start.y, end.y);
+
+        float const min = std::min<float>(width, height);
+        float const max = std::max<float>(width, height);
+
+        float const maxShiftY = 40.f;
+        float const maxShiftX = 20.f;
+
+        float const shiftY = std::min<float>(maxShiftY, max * 0.5);
+
+        float const shiftX = ((start.y >= end.y) ? std::min<float>(maxShiftX, min * 0.5) : 0.f) * ((start.x < end.x) ? -1. : 1.);
+
+        Point<float> const cp1 { start.x - shiftX, start.y + shiftY };
+        Point<float> const cp2 { end.x + shiftX, end.y - shiftY };
 
         // semi-transparent background line
         nvgBeginPath(nvg);
         nvgLineStyle(nvg, NVG_LINE_SOLID);
         nvgMoveTo(nvg, start.x, start.y);
         nvgBezierTo(nvg, cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-        nvgStrokeColor(nvg, nvgRGBA(45, 45, 45, 100));
+        nvgStrokeColor(nvg, nvgRGBA(100, 100, 100, 200));
         nvgLineCap(nvg, NVG_ROUND);
-        nvgStrokeWidth(nvg, 6.0f);
+        nvgStrokeWidth(nvg, 5.5f);
         nvgStroke(nvg);
 /*
         // solid background line
@@ -99,17 +107,32 @@ void EditorConnection::renderNVG(NVGWrapper *nvgWrapper)
         nvgLineStyle(nvg, cableType == CableType::Signal ? NVG_LINE_DASHED : NVG_LINE_SOLID);
         nvgMoveTo(nvg, start.x, start.y);
         nvgBezierTo(nvg, cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-        nvgStrokeColor(nvg, nvgRGBA(250, 250, 250, 255));
-        nvgStrokeWidth(nvg, 2.0f);
+        nvgStrokeColor(nvg, nvgRGBA(220, 220, 220, 255));
+        nvgStrokeWidth(nvg, 2.5f);
         nvgStroke(nvg);
         nvgLineStyle(nvg, NVG_LINE_SOLID);
 
 //#define DEBUG_CON
 #ifdef DEBUG_CON
+        nvgStrokeWidth(nvg, 1.0f);
+        nvgStrokeColor(nvg, nvgRGB(0,255,0));
+        nvgBeginPath(nvg);
+        nvgMoveTo(nvg, start.x, start.y);
+        nvgLineTo(nvg, cp1.x, cp1.y);
+        nvgStroke(nvg);
+
+        nvgBeginPath(nvg);
+        nvgMoveTo(nvg, end.x, end.y);
+        nvgLineTo(nvg, cp2.x, cp2.y);
+        nvgStroke(nvg);
+
         nvgBeginPath(nvg);
         nvgFillColor(nvg, nvgRGB(0,255,0));
-        nvgCircle(nvg, cPoint1.x, cPoint1.y, 5);
-        nvgCircle(nvg, cPoint2.x, cPoint2.y, 5);
+        nvgCircle(nvg, cp1.x, cp1.y, 5);
+        nvgFill(nvg);
+
+        nvgBeginPath(nvg);
+        nvgCircle(nvg, cp2.x, cp2.y, 5);
         nvgFill(nvg);
 #endif
 
