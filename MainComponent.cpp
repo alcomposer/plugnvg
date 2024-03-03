@@ -38,8 +38,7 @@ MainComponent::MainComponent()
     form.multisamplingLevel = 2;
     glContext.setPixelFormat(form);
     */
-    glContext.setContinuousRepainting(true);
-    glContext.setSwapInterval(1);
+    glContext.setContinuousRepainting(false);
 
     //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE );
     glContext.setRenderer(this);
@@ -49,7 +48,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(editor.get());
 
     setBounds(juce::Rectangle<int>(0,0,1200, 600));
-    //startTimerHz(60);
+    startTimerHz(60);
 }
 
 MainComponent::~MainComponent()
@@ -77,6 +76,11 @@ void MainComponent::newOpenGLContextCreated()
     nvgWrapper.interFont = nvgCreateFont(nvg, "sans", "../../../Data/InterSemiBold.ttf");
     if (nvgWrapper.interFont == -1)
         std::cout << "could not init font" << std::endl;
+
+    // swap interval needs to be set after the context has been created (here)
+    // if the GPU is nvidia, and gsync is active, this setting will be ignored, and swap interval of 1 will be used instead
+    // this should be fine if gsync is controlling the swap however, as the mouse will be synced to gsync also.
+    glContext.setSwapInterval(0);
 }
 
 void MainComponent::openGLContextClosing()
