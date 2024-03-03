@@ -126,7 +126,8 @@ void MainComponent::processRender(Component* c)
 
     //if (c->getNumChildComponents() > 0) {
         for (auto& child: c->getChildren()) {
-            processRender(child);
+            if (child->isVisible())
+                processRender(child);
         }
     //}
 
