@@ -84,7 +84,7 @@ void EditorConnection::renderNVG(NVGWrapper *nvgWrapper)
         cp1 = Point<float>(start_.x - shiftX, start_.y + shiftY);
         cp2 = Point<float>(end_.x + shiftX, end_.y - shiftY);
 
-        auto bounds = Rectangle<int>(pos.x, pos.y, width, height).expanded(8);
+        auto bounds = Rectangle<int>(pos.x, pos.y, width, height).expanded(14);
         setBounds(bounds);
 
         // semi-transparent background line

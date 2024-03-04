@@ -8,6 +8,9 @@ EditorNodeCanvas::EditorNodeCanvas()
 {
     setName("node canvas");
 
+    // not going to work when objects input text, but this is only a test for now
+    setWantsKeyboardFocus(true);
+
     delta = Point<int>(-halfSize, -halfSize);
 
     objectLayer.setInterceptsMouseClicks(false, true);
