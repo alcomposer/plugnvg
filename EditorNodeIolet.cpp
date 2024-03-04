@@ -25,7 +25,6 @@ void EditorNodeIolet::mouseDown(MouseEvent const& e)
         parentNode->isSelected = true;
         for (auto &selected: cnv->selectedComponents) {
             if (ioletType == Iolet::Outlet) {
-                std::cout << "node number of outlets: " << selected->outlets.size() << std::endl;
                 if (selected->outlets.size() > ioletIndex) {
                     auto outlet = selected->outlets[ioletIndex];
                     outlet->newConnection = new EditorConnection(outlet);
@@ -44,11 +43,11 @@ void EditorNodeIolet::mouseDown(MouseEvent const& e)
         cnv->addConnection(new EditorConnection(this));
         addingNewConnection = true;
     }
-
 }
 
 void EditorNodeIolet::mouseDrag(MouseEvent const &e) {
-    if (auto iolet = dynamic_cast<EditorNodeIolet*>(getTopLevelComponent()->getComponentAt(e.getScreenPosition() - getTopLevelComponent()->getScreenPosition()))) {
+    auto objectLayer = findParentComponentOfClass<EditorNodeCanvas>()->getObjectLayer();
+    if (auto iolet = dynamic_cast<EditorNodeIolet*>(objectLayer->getComponentAt(e.getScreenPosition() - objectLayer->getScreenPosition()))) {
         if (iolet == this)
             return;
         if (foundIolet)

@@ -57,7 +57,7 @@ target_compile_definitions(plugnvg
 
         #DEBUG_OBJECT_OUTLINE
         #DEBUG_CONNECTION_OUTLINE
-        DEBUG_CONNECTION_HITPATH
+        #DEBUG_CONNECTION_HITPATH
         )
 
 target_link_libraries(plugnvg

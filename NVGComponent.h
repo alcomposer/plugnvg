@@ -23,7 +23,7 @@ public:
 
     virtual void renderNVG(NVGWrapper* nvg) = 0;
 
-    virtual void resetNVG(NVGcontext* nvg){};
+    virtual void resetNVG(NVGcontext* nvg) {};
 
     void render(NVGWrapper* nvg)
     {
