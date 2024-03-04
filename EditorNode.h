@@ -62,9 +62,10 @@ public:
 
     void paintOverChildren(Graphics& g) override
     {
-        return;
+#ifdef DEBUG_OBJECT_OUTLINE
         g.setColour(Colours::red);
         g.drawRect(getLocalBounds(), 1.0f);
+#endif
     }
 
     void updateText(String text = String())
