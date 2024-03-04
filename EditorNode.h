@@ -27,7 +27,7 @@ public:
         auto inletPos = 20;
         auto inletPadding = (getBounds().getWidth() - (2 * border) + 20) / (inletNum);
         for (int i = 0; i < inletNum; i++) {
-            auto inlet = new EditorNodeIolet(EditorNodeIolet::Iolet::Inlet);
+            auto inlet = new EditorNodeIolet(this, i, EditorNodeIolet::Iolet::Inlet);
             inlets.add(inlet);
             addAndMakeVisible(inlet);
             inlet->setCentrePosition(inletPos + border, border);
@@ -40,7 +40,7 @@ public:
         auto outletPos = 20;
         auto outletPadding = (getBounds().getWidth() - (2 * 20) + (2 * border)) / 3;
         for (int i = 0; i < 3; i++) {
-            auto outlet = new EditorNodeIolet(EditorNodeIolet::Iolet::Outlet);
+            auto outlet = new EditorNodeIolet(this, i, EditorNodeIolet::Iolet::Outlet);
             outlets.add(outlet);
             addAndMakeVisible(outlet);
             outlet->setCentrePosition(outletPos + border, getHeight() - border);

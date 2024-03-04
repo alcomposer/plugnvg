@@ -5,12 +5,46 @@
 #include "EditorNodeIolet.h"
 #include "EditorConnection.h"
 #include "EditorNodeCanvas.h"
+#include "EditorNode.h"
+
+EditorNodeIolet::EditorNodeIolet(EditorNode* parentNode, int index, Iolet type)
+    : ioletIndex(index)
+    , ioletType(type)
+    , parentNode(parentNode)
+{
+    static int number = 0;
+    setName("iolet " + String(number++));
+    setSize(20,20);
+}
 
 void EditorNodeIolet::mouseDown(MouseEvent const& e)
 {
-    auto editor = findParentComponentOfClass<EditorNodeCanvas>();
-    newConnection = new EditorConnection(this);
-    editor->addConnection(newConnection);
+    auto cnv = findParentComponentOfClass<EditorNodeCanvas>();
+    if (e.mods.isShiftDown()) {
+        cnv->selectedComponents.addToSelection(parentNode);
+        parentNode->isSelected = true;
+        for (auto &selected: cnv->selectedComponents) {
+            if (ioletType == Iolet::Outlet) {
+                std::cout << "node number of outlets: " << selected->outlets.size() << std::endl;
+                if (selected->outlets.size() > ioletIndex) {
+                    auto outlet = selected->outlets[ioletIndex];
+                    outlet->newConnection = new EditorConnection(outlet);
+                    cnv->addConnection(outlet->newConnection);
+                }
+            } else {
+                if (selected->inlets.size() > ioletIndex) {
+                    auto inlet = selected->inlets[ioletIndex];
+                    inlet->newConnection = new EditorConnection(inlet);
+                    cnv->addConnection(inlet->newConnection);
+                }
+            }
+            addingNewConnection = true;
+        }
+    } else {
+        cnv->addConnection(new EditorConnection(this));
+        addingNewConnection = true;
+    }
+
 }
 
 void EditorNodeIolet::mouseDrag(MouseEvent const &e) {
@@ -30,16 +64,19 @@ void EditorNodeIolet::mouseDrag(MouseEvent const &e) {
 
 void EditorNodeIolet::mouseUp(MouseEvent const& e)
 {
+    auto cnv = findParentComponentOfClass<EditorNodeCanvas>();
+
     if (foundIolet) {
         std::cout << "found iolet" << std::endl;
-        newConnection->endNode = foundIolet;
+        for (auto con : cnv->cons) {
+            if (con->endNode == nullptr)
+                con->endNode = foundIolet;
+        }
+        addingNewConnection = false;
         foundIolet = nullptr;
     }
-    if (newConnection && newConnection->endNode == nullptr) {
-        std::cout << "connection is not complete, delete cable" << std::endl;
-        if (auto editor = findParentComponentOfClass<EditorNodeCanvas>()) {
-            editor->removeUnsuccessfulConnection();
-            newConnection = nullptr;
-        }
+    if (addingNewConnection) {
+        std::cout << "connection is not complete, delete cable/s" << std::endl;
+        cnv->removeUnsuccessfulConnections();
     }
 }

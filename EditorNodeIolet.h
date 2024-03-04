@@ -4,18 +4,14 @@
 #pragma once
 #include "NVGComponent.h"
 
+class EditorNode;
 class EditorConnection;
 class EditorNodeIolet : public NVGComponent
 {
 public:
     enum Iolet {Inlet, Outlet};
 
-    EditorNodeIolet(Iolet type = Iolet::Outlet) : ioletType(type)
-    {
-        static int number = 0;
-        setName("iolet " + String(number++));
-        setSize(20,20);
-    }
+    EditorNodeIolet(EditorNode* parentNode, int index, Iolet type = Iolet::Outlet);
 
     void mouseEnter(MouseEvent const& e) override
     {
@@ -68,6 +64,7 @@ public:
         nvgRestore(nvg);
     }
 
+
     WidgetType getType() override
     {
         return WidgetType::Iolet;
@@ -75,10 +72,13 @@ public:
 
     Iolet ioletType;
     Point<int> pos;
+    int ioletIndex = 0;
     bool isActive = false;
     EditorNodeIolet* foundIolet = nullptr;
 
-private:
     SafePointer<EditorConnection> newConnection;
+    bool addingNewConnection = false;
+private:
+    EditorNode* parentNode;
 };
 

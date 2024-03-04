@@ -6,7 +6,7 @@
 #include "EditorNodeIolet.h"
 #include "EditorNodeCanvas.h"
 
-EditorConnection::EditorConnection(EditorNodeIolet *node) :  node(node)
+EditorConnection::EditorConnection(EditorNodeIolet *startNode) :  node(startNode)
 {
     static int con = 0;
     setName("connection " + String(con++));

@@ -15,7 +15,7 @@ public:
 
     enum CableType {Data, Signal, MCSignal};
 
-    EditorConnection(EditorNodeIolet* node);
+    EditorConnection(EditorNodeIolet* startNode);
 
     EditorConnection(EditorNodeIolet* startNode, EditorNodeIolet* endNode);
 

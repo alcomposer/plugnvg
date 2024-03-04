@@ -107,15 +107,6 @@ public:
 
     void changeListenerCallback (ChangeBroadcaster* source) override
     {
-        return;
-        if (source == &selectedComponents) {
-            for (auto node : nodes) {
-                node->getProperties().set("is_selected", var(false));
-            }
-            for (auto node : selectedComponents) {
-                node->getProperties().set("is_selected", var(true));
-            }
-        }
     }
 
     SelectedItemSet<EditorNode*>& getLassoSelection() override
@@ -187,7 +178,7 @@ public:
         addAndMakeVisible(newConnection);
     }
 
-    void removeUnsuccessfulConnection();
+    void removeUnsuccessfulConnections();
 
     void setSingleSelected(EditorNode* nodeToSelect)
     {
@@ -225,12 +216,13 @@ public:
 
     Point<int> nvgNodeDragOffset;
 
+    OwnedArray<EditorConnection> cons;
+
 private:
 
 
     bool isPressed = false;
     OwnedArray<EditorNode> nodes;
-    OwnedArray<EditorConnection> cons;
     Point<int> currentPos;
     Point<int> mouseDownPos;
     Point<int> delta;

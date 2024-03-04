@@ -25,14 +25,14 @@ EditorNodeCanvas::EditorNodeCanvas()
     // test for component that is drawn by juce paint
     //addAndMakeVisible(&testComp);
 
-#if (TEST_1000 == 1)
+#ifdef TEST_PATCH
     Random random;
     Range range = Range<int>(100000, 101000);
 
     EditorNode* mainNode;
 
     for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 100; j++) {
+        for (int j = 0; j < 10; j++) {
             //auto pos = Point<int>(random.nextInt(range), random.nextInt(range));
             auto pos = Point<int>((i * 110) + 100000, (j * 40) + 100000);
             auto node = new EditorNode(pos);
@@ -40,12 +40,13 @@ EditorNodeCanvas::EditorNodeCanvas()
             nodes.add(node);
             addAndMakeVisible(node);
 
+#ifdef AUTOCONNECT
             if (i == 0 && j == 0)
                 mainNode = node;
             else {
                 addConnection(new EditorConnection(mainNode->outlets[0], node->inlets[0]));
             }
-
+#endif
         }
     }
 #endif
@@ -65,17 +66,18 @@ void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {
     }
 }
 
-void EditorNodeCanvas::removeUnsuccessfulConnection()
+void EditorNodeCanvas::removeUnsuccessfulConnections()
 {
     while(true) {
-        //std::cout << "trying to aquire lock" << std::endl;
         ScopedTryLock lock(findParentComponentOfClass<MainComponent>()->renderLock);
         if (lock.isLocked()){
-            std::cout << "cons size: " << cons.size() << std::endl;
-            if (!cons.getLast()->endNode) {
-                cons.removeLast();
-                return;
+            for (int i = cons.size() - 1; i >= 0; i--) {
+                auto con = cons[i];
+                if (con->endNode == nullptr) {
+                    cons.removeObject(con);
+                }
             }
+            return;
         }
         std::this_thread::sleep_for(std::chrono::nanoseconds(1));
     }
