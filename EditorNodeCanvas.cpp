@@ -10,6 +10,11 @@ EditorNodeCanvas::EditorNodeCanvas()
 
     delta = Point<int>(-halfSize, -halfSize);
 
+    objectLayer.setInterceptsMouseClicks(false, true);
+    connectionLayer.setInterceptsMouseClicks(false, true);
+
+    addAndMakeVisible(objectLayer);
+    addAndMakeVisible(connectionLayer);
 
     addAndMakeVisible(&lasso);
     lasso.setAlwaysOnTop(true);
@@ -38,7 +43,7 @@ EditorNodeCanvas::EditorNodeCanvas()
             auto node = new EditorNode(pos);
             //node->setCentrePosition(pos);
             nodes.add(node);
-            addAndMakeVisible(node);
+            objectLayer.addAndMakeVisible(node);
 
 #ifdef AUTOCONNECT
             if (i == 0 && j == 0)

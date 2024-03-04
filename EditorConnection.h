@@ -72,7 +72,5 @@ private:
     Point<float> end_;
 
     Path hitTestPath;
-
-    Point<float> offsetHack = Point<float>(100000,100000);
 };
 

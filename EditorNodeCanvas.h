@@ -10,40 +10,6 @@
 #include "EditorConnection.h"
 #include "NVGLasso.h"
 
-
-class TestComp : public NVGComponent
-{
-public:
-    TestComp()
-    {
-        setBounds(100000, 100000, 50, 50);
-    }
-
-    bool hitTest(int x, int y) override
-    {
-        std::cout << "x: " << x << " y: " << y << std::endl;
-        mousePos = Point<int>(x, y);
-        return true;
-    }
-
-    void paint(Graphics& g) override
-    {
-        g.fillAll(Colours::red);
-    }
-
-    void renderNVG(NVGWrapper* nvgWrapper) override
-    {
-        auto nvg = nvgWrapper->nvg;
-        nvgBeginPath(nvg);
-        nvgCircle(nvg, mousePos.x, mousePos.y, 50);
-        nvgFillColor(nvg, nvgRGBf(.5, .2, .8));
-        nvgFill(nvg);
-    }
-
-    Point<int> mousePos;
-
-};
-
 class EditorNodeCanvas : public NVGComponent, public LassoSource<EditorNode*>, public ChangeListener
 {
 public:
@@ -59,7 +25,7 @@ public:
             auto node = new EditorNode(pos);
             //node->setCentrePosition(pos);
             nodes.add(node);
-            addAndMakeVisible(node);
+            objectLayer.addAndMakeVisible(node);
             setSingleSelected(nullptr);
         } else if (e.mods.isLeftButtonDown()) {
             for (auto* c : selectedComponents) {
@@ -88,6 +54,13 @@ public:
         //std::cout << "canvas scale: " << canvasScale << std::endl;
         mousePos = e.getEventRelativeTo(getParentComponent()).getPosition();
         //delta = getLocalBounds().getPosition() + getLocalPoint(nullptr, e.getScreenPosition()) * canvasScale;
+    }
+
+    void resized() override
+    {
+        std::cout << "resizing" << std::endl;
+        connectionLayer.setBounds(getLocalBounds());
+        objectLayer.setBounds(getLocalBounds());
     }
 
     void findLassoItemsInArea (Array<EditorNode*>& itemsFound,
@@ -175,7 +148,7 @@ public:
     void addConnection(EditorConnection* newConnection)
     {
         cons.add(newConnection);
-        addAndMakeVisible(newConnection);
+        connectionLayer.addAndMakeVisible(newConnection);
     }
 
     void removeUnsuccessfulConnections();
@@ -214,9 +187,17 @@ public:
         nvgNodeDragOffset = nodeDragOffset;
     }
 
+    Component* getObjectLayer()
+    {
+        return &objectLayer;
+    }
+
     Point<int> nvgNodeDragOffset;
 
     OwnedArray<EditorConnection> cons;
+
+    Component objectLayer;
+    Component connectionLayer;
 
 private:
 
@@ -237,8 +218,6 @@ private:
 
     static constexpr int canvasSize = 200000;
     static constexpr int halfSize = canvasSize / 2;
-
-    TestComp testComp;
 
     NVGpaint dots;
     bool resetDots = true;
