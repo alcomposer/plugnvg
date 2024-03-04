@@ -46,6 +46,23 @@ public:
         lasso.endLasso();
     }
 
+    // press s to swap object and connection layer TEST only
+    bool keyPressed(const juce::KeyPress &key) override
+    {
+        if (key.getTextCharacter() == *String("s").toWideCharPointer()) {
+            static bool frontBack = false;
+            if (frontBack) {
+                objectLayer.toBack();
+                frontBack = false;
+            } else {
+                connectionLayer.toBack();
+                frontBack = true;
+            }
+            return true;
+        }
+        return false;
+    }
+
     void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
     {
         return;
