@@ -104,7 +104,6 @@ public:
 
     void mouseUp(MouseEvent const& e) override
     {
-        setCentrePosition(pos);
         setMouseCursor(MouseCursor::NormalCursor);
     }
 
