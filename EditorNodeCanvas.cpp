@@ -32,7 +32,7 @@ EditorNodeCanvas::EditorNodeCanvas()
     EditorNode* mainNode;
 
     for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
+        for (int j = 0; j < 50; j++) {
             //auto pos = Point<int>(random.nextInt(range), random.nextInt(range));
             auto pos = Point<int>((i * 110) + 100000, (j * 40) + 100000);
             auto node = new EditorNode(pos);

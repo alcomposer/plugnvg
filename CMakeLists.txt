@@ -52,8 +52,12 @@ target_compile_definitions(plugnvg
         PERFETTO=0
         JUCE_FORCE_DEBUG=1
 
-        #TEST_PATCH
+        TEST_PATCH
         #AUTOCONNECT
+
+        #DEBUG_OBJECT_OUTLINE
+        #DEBUG_CONNECTION_OUTLINE
+        DEBUG_CONNECTION_HITPATH
         )
 
 target_link_libraries(plugnvg
