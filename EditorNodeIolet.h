@@ -2,11 +2,11 @@
 // Created by alexmitchell on 16/02/24.
 //
 #pragma once
-#include "NVGComponent.h"
+#include <JuceHeader.h>
 
 class EditorNode;
 class EditorConnection;
-class EditorNodeIolet : public NVGComponent
+class EditorNodeIolet : public Component
 {
 public:
     enum Iolet {Inlet, Outlet};
@@ -25,49 +25,6 @@ public:
     void mouseExit(MouseEvent const& e) override
     {
         isActive = false;
-    }
-    void renderNVG(NVGWrapper * nvgWrapper) override
-    {
-        return;
-
-        auto nvg = nvgWrapper->nvg;
-
-        auto ioletColor = nvgRGB(66, 162, 200);
-
-        auto parentPos = getParentComponent()->getPosition();
-        //auto canvasPos = getParentComponent()->getParentComponent()->getPosition();
-        auto finalPos = parentPos + pos;
-        nvgSave(nvg);
-        nvgBeginPath(nvg);
-        nvgCircle(nvg, finalPos.x, finalPos.y, isActive ? 8 : 5);
-        if (!isActive) {
-
-            if (ioletType == Iolet::Outlet)
-                nvgScissor(nvg, finalPos.x - 7, finalPos.y - 9, 14, 9);
-            else
-                nvgScissor(nvg, finalPos.x - 7, finalPos.y, 14, 9);
-
-            nvgStrokeColor(nvg, nvgRGBA(255, 255, 255, 255));
-            nvgStrokeWidth(nvg, 2.0f);
-            nvgStroke(nvg);
-            nvgFillColor(nvg, ioletColor); // Red color
-            nvgFill(nvg);
-
-        } else {
-
-            nvgFillColor(nvg, ioletColor); // Red color
-            nvgFill(nvg);
-            nvgStrokeColor(nvg, nvgRGBA(255, 255, 255, 255));
-            nvgStrokeWidth(nvg, 2.0f);
-            nvgStroke(nvg);
-        }
-        nvgRestore(nvg);
-    }
-
-
-    WidgetType getType() override
-    {
-        return WidgetType::Iolet;
     }
 
     Iolet ioletType;

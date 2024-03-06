@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NVGComponent.h"
 #include "EditorNodeIolet.h"
 #include "libraries/melatonin_perfetto/melatonin_perfetto/melatonin_perfetto.h"
 
