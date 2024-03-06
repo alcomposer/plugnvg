@@ -243,6 +243,11 @@ public:
         for (auto& inlet : inlets) {
             if (inlet->isActive) {
                 nvgBeginPath(nvg);
+                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
+                nvgCircle(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 8);
+                nvgFill(nvg);
+
+                nvgBeginPath(nvg);
                 nvgFillColor(nvg, selectedColour);
                 nvgCircle(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 7);
                 nvgFill(nvg);
@@ -262,6 +267,11 @@ public:
         // draw all outlets at once
         for (auto& outlet : outlets) {
             if (outlet->isActive) {
+                nvgBeginPath(nvg);
+                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
+                nvgCircle(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 8);
+                nvgFill(nvg);
+
                 nvgBeginPath(nvg);
                 nvgFillColor(nvg, selectedColour);
                 nvgCircle(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 7);
