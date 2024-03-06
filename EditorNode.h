@@ -159,20 +159,15 @@ public:
 
 #endif
 
-        //auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
         auto b = Rectangle<float>(pos.x, pos.y, getWidth(), getHeight()).reduced(border + .5f);
-        //auto b = Rectangle<int>(pos.x, pos.y, getWidth(), getHeight()).reduced(border);
-        //setTopLeftPosition(pos);
-        //nvgBeginPath(nvg);
+
         auto cSelect = nvgRGBf(.3, .3, .3);
         auto cDefault = nvgRGBf(.2, .2, .2);
-
-        // we need to check if the var pointer is valid before we dereference it!
-        //if (auto selected = getProperties().getVarPointer("is_selected"))
-        //    isSelected = static_cast<bool>(*selected);
+        auto cOutline = nvgRGBf(.6, .6, .6);
 
         auto colour = cDefault;
         auto selectedColour = nvgRGB(66, 162, 200);
+        auto textColour = nvgRGBf(.8, .8, .8);
 
         auto isActivity = false;
 
@@ -204,6 +199,7 @@ public:
         nvgFillPaint(nvg, imgPaint);
         nvgFill(nvg);
 #else
+        // draw selection corners
         if (isSelected) {
             nvgFillColor(nvg, selectedColour);
             // top left
@@ -225,15 +221,17 @@ public:
 
         }
 
+        // draw node background with outline
         nvgBeginPath(nvg);
         nvgRoundedRect(nvg, b.getX(), b.getY(), b.getWidth(), b.getHeight(), 5);
         nvgFillColor(nvg, cDefault);
         nvgFill(nvg);
         nvgStrokeWidth(nvg, 1.f);
-        nvgStrokeColor(nvg, isSelected ? selectedColour : nvgRGBf(.8, .8, .8));
+        nvgStrokeColor(nvg, isSelected ? selectedColour : cOutline);
         nvgStroke(nvg);
 
-        nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
+        // draw text
+        nvgFillColor(nvg, textColour);
         nvgFontSize(nvg, 16.0f);
         nvgFontFace(nvg, "sans");
         nvgTextAlign(nvg, NVG_ALIGN_MIDDLE | NVG_ALIGN_LEFT);
@@ -243,7 +241,7 @@ public:
         for (auto& inlet : inlets) {
             if (inlet->isActive) {
                 nvgBeginPath(nvg);
-                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
+                nvgFillColor(nvg, cOutline);
                 nvgCircle(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 8);
                 nvgFill(nvg);
 
@@ -253,7 +251,7 @@ public:
                 nvgFill(nvg);
             } else {
                 nvgBeginPath(nvg);
-                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
+                nvgFillColor(nvg, cOutline);
                 nvgArc(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CW);
                 nvgFill(nvg);
 
@@ -268,7 +266,7 @@ public:
         for (auto& outlet : outlets) {
             if (outlet->isActive) {
                 nvgBeginPath(nvg);
-                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
+                nvgFillColor(nvg, cOutline);
                 nvgCircle(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 8);
                 nvgFill(nvg);
 
@@ -278,7 +276,7 @@ public:
                 nvgFill(nvg);
             } else {
                 nvgBeginPath(nvg);
-                nvgFillColor(nvg, nvgRGBf(.8, .8, .8));
+                nvgFillColor(nvg, cOutline);
                 nvgArc(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CCW);
                 nvgFill(nvg);
 

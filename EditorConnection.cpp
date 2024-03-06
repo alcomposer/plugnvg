@@ -27,6 +27,7 @@ void EditorConnection::renderNVG(NVGWrapper *nvgWrapper)
 
     auto const defaultColour = nvgRGB(220, 220, 220);
     auto const selectedColour = nvgRGB(66, 162, 200);
+    auto const outlineColour = nvgRGBAf(.4, .4, .4, .4);//nvgRGBA(100, 100, 100, 200)
 
     auto mouse = Desktop::getInstance().getMainMouseSource().getScreenPosition();
     auto startPos = cnv->getLocalPoint(nullptr, node->getScreenBounds().toFloat().getCentre());// - getTopLevelComponent()->getScreenPosition().toFloat();
@@ -92,21 +93,11 @@ void EditorConnection::renderNVG(NVGWrapper *nvgWrapper)
         nvgLineStyle(nvg, NVG_LINE_SOLID);
         nvgMoveTo(nvg, start_.x, start_.y);
         nvgBezierTo(nvg, cp1.x, cp1.y, cp2.x, cp2.y, end_.x, end_.y);
-        nvgStrokeColor(nvg, nvgRGBA(100, 100, 100, 200));
+        nvgStrokeColor(nvg, outlineColour);
         nvgLineCap(nvg, NVG_ROUND);
         nvgStrokeWidth(nvg, 5.5f);
         nvgStroke(nvg);
-/*
-        // solid background line
-        nvgBeginPath(nvg);
-        nvgLineStyle(nvg, NVG_LINE_SOLID);
-        nvgMoveTo(nvg, start.x, start.y);
-        nvgBezierTo(nvg, cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-        nvgStrokeColor(nvg, nvgRGBA(55, 55, 55, 255));
-        nvgLineCap(nvg, NVG_ROUND);
-        nvgStrokeWidth(nvg, 3.5f);
-        nvgStroke(nvg);
-*/
+
         // inner line
         nvgBeginPath(nvg);
         nvgLineStyle(nvg, cableType == CableType::Signal ? NVG_LINE_DASHED : NVG_LINE_SOLID);
