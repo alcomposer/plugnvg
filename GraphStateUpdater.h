@@ -5,6 +5,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "EditorNode.h"
 
 class GraphStateUpdater
 {
@@ -17,7 +18,7 @@ public:
 
     GraphStateUpdater(){};
 
-    void queueUpdate(void* node, std::function<void()> updateFunc)
+    void queueUpdate(EditorNode* node, std::function<void()> updateFunc)
     {
         auto& latestFunctionMap = activeFunctionSet.load() ? latestFunctionMapB : latestFunctionMapA;
         latestFunctionMap[node] = updateFunc;
@@ -39,6 +40,6 @@ public:
 private:
 
     std::atomic<bool> activeFunctionSet = false;
-    std::unordered_map<void*, std::function<void()>> latestFunctionMapA;
-    std::unordered_map<void*, std::function<void()>> latestFunctionMapB;
+    std::unordered_map<EditorNode*, std::function<void()>> latestFunctionMapA;
+    std::unordered_map<EditorNode*, std::function<void()>> latestFunctionMapB;
 };
