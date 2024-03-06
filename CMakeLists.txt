@@ -53,7 +53,7 @@ target_compile_definitions(plugnvg
         PERFETTO=0
         JUCE_FORCE_DEBUG=0
 
-        #TEST_PATCH
+        TEST_PATCH
         #AUTOCONNECT
 
         #DEBUG_OBJECT_OUTLINE
