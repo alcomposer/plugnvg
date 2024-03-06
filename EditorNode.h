@@ -281,26 +281,26 @@ public:
 #endif
     }
 
-    void applyGammaCorrection(juce::Image& image, float gamma) {
+    void applyGammaCorrection(juce::Image &image, float gamma) {
         juce::Image::BitmapData bitmapData(image, juce::Image::BitmapData::writeOnly);
 
-    // Iterate through each pixel in the image
-    for (int y = 0; y < bitmapData.height; ++y) {
-        for (int x = 0; x < bitmapData.width; ++x) {
-            // Get the color of the pixel
-            juce::Colour pixelColour(bitmapData.getPixelColour(x, y));
+        // Iterate through each pixel in the image
+        for (int y = 0; y < bitmapData.height; ++y) {
+            for (int x = 0; x < bitmapData.width; ++x) {
+                // Get the color of the pixel
+                juce::Colour pixelColour(bitmapData.getPixelColour(x, y));
 
-            // Apply gamma correction to each color channel
-            float r = std::pow(pixelColour.getFloatRed(), gamma);
-            float g = std::pow(pixelColour.getFloatGreen(), gamma);
-            float b = std::pow(pixelColour.getFloatBlue(), gamma);
-            float a = pixelColour.getFloatAlpha();
+                // Apply gamma correction to each color channel
+                float r = std::pow(pixelColour.getFloatRed(), gamma);
+                float g = std::pow(pixelColour.getFloatGreen(), gamma);
+                float b = std::pow(pixelColour.getFloatBlue(), gamma);
+                float a = pixelColour.getFloatAlpha();
 
-            // Set the corrected color to the pixel
-            bitmapData.setPixelColour(x, y, Colour(PixelARGB(a * 255, r * 255, g * 255, b * 255)));
+                // Set the corrected color to the pixel
+                bitmapData.setPixelColour(x, y, Colour(PixelARGB(a * 255, r * 255, g * 255, b * 255)));
+            }
         }
     }
-}
 
 // Function to convert gamma corrected image to linear space
 void convertToLinear(juce::Image& image, float gamma) {
