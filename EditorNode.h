@@ -162,7 +162,7 @@ public:
         //auto b = getBounds().translated(parentLeft.getX(), parentLeft.getY()).reduced(border);
         auto b = Rectangle<float>(pos.x, pos.y, getWidth(), getHeight()).reduced(border + .5f);
         //auto b = Rectangle<int>(pos.x, pos.y, getWidth(), getHeight()).reduced(border);
-        setTopLeftPosition(pos);
+        //setTopLeftPosition(pos);
         //nvgBeginPath(nvg);
         auto cSelect = nvgRGBf(.3, .3, .3);
         auto cDefault = nvgRGBf(.2, .2, .2);

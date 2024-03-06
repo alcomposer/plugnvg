@@ -49,11 +49,12 @@ target_compile_definitions(plugnvg
         JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_USE_XSHM=1
         JUCE_USE_XRENDER=1
+
         PERFETTO=0
-        JUCE_FORCE_DEBUG=1
+        JUCE_FORCE_DEBUG=0
 
         TEST_PATCH
-        #AUTOCONNECT
+        AUTOCONNECT
 
         #DEBUG_OBJECT_OUTLINE
         #DEBUG_CONNECTION_OUTLINE

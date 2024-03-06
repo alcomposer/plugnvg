@@ -9,6 +9,7 @@
 #include "EditorNode.h"
 #include "EditorConnection.h"
 #include "NVGLasso.h"
+#include "GraphStateUpdater.h"
 
 class EditorNodeCanvas : public NVGComponent, public LassoSource<EditorNode*>, public ChangeListener
 {
@@ -106,12 +107,15 @@ public:
 
     void renderNVG(NVGWrapper* nvgWrapper) override
     {
+        setTopLeftPosition(delta - mousePos);
+
+        GraphStateUpdater::getInstance().updateGraphState();
+
         auto nvg = nvgWrapper->nvg;
         // instead of locking (which would never work anyway) we make Juce update the position of the canvas
         // from the openGL callback. This way it will be the same position during the entire opengl render call
         // this may not be the best idea, but it works for now.
         //TRACE_COMPONENT();
-        setTopLeftPosition(delta - mousePos);
 
         auto b = Rectangle<int>(0, 0, canvasSize, canvasSize);
 

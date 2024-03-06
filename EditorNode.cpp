@@ -3,6 +3,7 @@
 //
 #include "EditorNode.h"
 #include "EditorNodeCanvas.h"
+#include "GraphStateUpdater.h"
 
 void EditorNode::mouseDown(MouseEvent const& e) {
     if (e.mods.isMiddleButtonDown()) {
@@ -43,6 +44,10 @@ void EditorNode::mouseDrag(MouseEvent const &e) {
     //std::cout << "pos: " << pos.toString() << std::endl;
     //setTopLeftPosition(pos - dragDelta);
     pos += e.getScreenPosition() - mouseDownPos;
+    GraphStateUpdater::getInstance().queueUpdate(this, [this]() {
+        setTopLeftPosition(pos);
+    });
+    //setTopLeftPosition(pos);
     mouseDownPos = e.getScreenPosition();
     //dragDelta = mouseDownPos - e.getOffsetFromDragStart();
 }

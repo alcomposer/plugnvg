@@ -90,7 +90,7 @@ void MainComponent::openGLContextClosing()
 
 void MainComponent::renderOpenGL()
 {
-    //TRACE_COMPONENT();
+    TRACE_COMPONENT();
     ScopedLock lock(renderLock);
     glViewport(0, 0, getWidth(), getHeight());
     OpenGLHelpers::clear(Colours::black);
@@ -103,8 +103,6 @@ void MainComponent::renderOpenGL()
 void MainComponent::processRender(Component* c)
 {
     TRACE_COMPONENT();
-    if (c == nullptr || !c->isVisible())
-        return;
 
     NVGComponent* nvgComp = nullptr;
 
