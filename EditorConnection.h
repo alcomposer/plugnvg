@@ -35,6 +35,19 @@ public:
         if (ModifierKeys::getCurrentModifiers().isMiddleButtonDown())
             return false;
 
+        auto cnv = getParentComponent();
+
+        // exclude the area around the iolet, so the mouse hover will not register on the cable
+        // we want users to be able to click on the iolet still, and drag out other cables
+
+        const auto hitPoint = Point<float>(x, y);
+
+        const auto startExculsionDistance = getLocalPoint(cnv, start_).getDistanceFrom(hitPoint);
+        const auto endExculsionDistance = getLocalPoint(cnv, end_).getDistanceFrom(hitPoint);
+
+        if ((startExculsionDistance < 10) || (endExculsionDistance < 10))
+            return false;
+
         Point<float> position = Point<float>(static_cast<float>(x), static_cast<float>(y));
         Point<float> nearestPoint;
         hitTestPath.getNearestPoint(position, nearestPoint);
