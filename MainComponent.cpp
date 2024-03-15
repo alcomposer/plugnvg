@@ -61,6 +61,7 @@ MainComponent::~MainComponent()
 
 void MainComponent::timerCallback()
 {
+    GraphStateUpdater::getInstance().updateGraphState();
     glContext.triggerRepaint();
 }
 

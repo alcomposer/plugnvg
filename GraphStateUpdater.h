@@ -31,7 +31,7 @@ public:
      * Add a function, which will be mapped to the node object. New functions (for the same node)
      * that come in before updateGraphState is called will be overwritten
      */
-    void queueUpdate(EditorNode* node, std::function<void()> updateFunc)
+    void queueUpdate(void* node, std::function<void()> updateFunc)
     {
         auto& latestFunctionMap = activeFunctionMap.load() ? latestFunctionMapA : latestFunctionMapB;
         latestFunctionMap[node] = updateFunc;
@@ -42,6 +42,7 @@ public:
      */
     void updateGraphState()
     {
+        TRACE_COMPONENT();
         // swap the map to store new functions to
         auto activeMap = activeFunctionMap.load();
         activeFunctionMap.store(!activeMap);
@@ -61,6 +62,6 @@ public:
 private:
 
     std::atomic<bool> activeFunctionMap = false;
-    std::unordered_map<EditorNode*, std::function<void()>> latestFunctionMapA;
-    std::unordered_map<EditorNode*, std::function<void()>> latestFunctionMapB;
+    std::unordered_map<void*, std::function<void()>> latestFunctionMapA;
+    std::unordered_map<void*, std::function<void()>> latestFunctionMapB;
 };

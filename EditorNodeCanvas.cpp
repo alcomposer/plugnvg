@@ -69,6 +69,9 @@ void EditorNodeCanvas::mouseDrag(MouseEvent const &e) {
     if (e.mods.isMiddleButtonDown()) {
         setMouseCursor(MouseCursor::DraggingHandCursor);
         delta = currentPos + (e.getOffsetFromDragStart() / canvasScale);
+        GraphStateUpdater::getInstance().queueUpdate(this, [this]() {
+            setTopLeftPosition(delta - mousePos);
+        });
     } else if (e.mods.isLeftButtonDown()) {
         lasso.dragLasso(e);
     }
