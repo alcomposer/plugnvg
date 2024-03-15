@@ -79,7 +79,8 @@ void EditorNode::renderNVG(NVGWrapper *nvgWrapper) {
 #endif
     auto cnv = findParentComponentOfClass<EditorNodeCanvas>();
     auto bounds = cnv->getLocalArea(this, getLocalBounds());
-    auto b = Rectangle<float>(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()).reduced(border + .5f);
+    auto braw = Rectangle<float>(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+    auto b = braw.reduced(border + .5f);
 
     auto cSelect = nvgRGBf(.3, .3, .3);
     auto cDefault = nvgRGBf(.2, .2, .2);
@@ -164,22 +165,22 @@ void EditorNode::renderNVG(NVGWrapper *nvgWrapper) {
         if (inlet->isActive) {
             nvgBeginPath(nvg);
             nvgFillColor(nvg, cOutline);
-            nvgCircle(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 8);
+            nvgCircle(nvg, inlet->pos.x + braw.getX(), inlet->pos.y + braw.getY(), 8);
             nvgFill(nvg);
 
             nvgBeginPath(nvg);
             nvgFillColor(nvg, selectedColour);
-            nvgCircle(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 7);
+            nvgCircle(nvg, inlet->pos.x + braw.getX(), inlet->pos.y +  braw.getY(), 7);
             nvgFill(nvg);
         } else {
             nvgBeginPath(nvg);
             nvgFillColor(nvg, cOutline);
-            nvgArc(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CW);
+            nvgArc(nvg, inlet->pos.x + braw.getX(), inlet->pos.y +  braw.getY(), 6, 0, NVG_PI, NVG_CW);
             nvgFill(nvg);
 
             nvgBeginPath(nvg);
             nvgFillColor(nvg, selectedColour);
-            nvgArc(nvg, inlet->pos.x + pos.x, inlet->pos.y + pos.y, 5, 0, NVG_PI, NVG_CW);
+            nvgArc(nvg, inlet->pos.x + braw.getX(), inlet->pos.y +  braw.getY(), 5, 0, NVG_PI, NVG_CW);
             nvgFill(nvg);
         }
     }
@@ -189,22 +190,22 @@ void EditorNode::renderNVG(NVGWrapper *nvgWrapper) {
         if (outlet->isActive) {
             nvgBeginPath(nvg);
             nvgFillColor(nvg, cOutline);
-            nvgCircle(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 8);
+            nvgCircle(nvg, outlet->pos.x + braw.getX(), outlet->pos.y + braw.getY(), 8);
             nvgFill(nvg);
 
             nvgBeginPath(nvg);
             nvgFillColor(nvg, selectedColour);
-            nvgCircle(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 7);
+            nvgCircle(nvg, outlet->pos.x + braw.getX(), outlet->pos.y + braw.getY(), 7);
             nvgFill(nvg);
         } else {
             nvgBeginPath(nvg);
             nvgFillColor(nvg, cOutline);
-            nvgArc(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 6, 0, NVG_PI, NVG_CCW);
+            nvgArc(nvg, outlet->pos.x + braw.getX(), outlet->pos.y + braw.getY(), 6, 0, NVG_PI, NVG_CCW);
             nvgFill(nvg);
 
             nvgBeginPath(nvg);
             nvgFillColor(nvg, selectedColour);
-            nvgArc(nvg, outlet->pos.x + pos.x, outlet->pos.y + pos.y, 5, 0, NVG_PI, NVG_CCW);
+            nvgArc(nvg, outlet->pos.x + braw.getX(), outlet->pos.y + braw.getY(), 5, 0, NVG_PI, NVG_CCW);
             nvgFill(nvg);
         }
     }
